@@ -1,6 +1,6 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration file="D:\MATLAB\FA\FontAwesomeIcons.prj" location="D:\MATLAB\FA" name="FontAwesomeIcons" target="target.toolbox" target-name="Package Toolbox">
-    <param.appname>Font Awesome Icons</param.appname>
+  <configuration file="D:\MATLAB\FA\FontAwesome.prj" location="D:\MATLAB\FA" name="FontAwesome" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>Font Awesome</param.appname>
     <param.authnamewatermark>Pavel Roslovets</param.authnamewatermark>
     <param.email>roslovets@exponenta.ru</param.email>
     <param.company>ETMC Exponenta</param.company>
@@ -8,7 +8,7 @@
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\fa-cover.png</param.screenshot>
     <param.version>1.0</param.version>
-    <param.output>${PROJECT_ROOT}\Font Awesome Icons.mltbx</param.output>
+    <param.output>${PROJECT_ROOT}\Font Awesome.mltbx</param.output>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -16,7 +16,9 @@
     <param.guid>eadd37fa-5639-4914-86c0-a4a206c0dccc</param.guid>
     <param.exclude.filters>.git
 work
-test.m</param.exclude.filters>
+test.m
+dev_on.m
+FontAwesomeDev.m</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples />
     <param.demosxml />
@@ -90,17 +92,20 @@ test.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\doc</file>
       <file>${PROJECT_ROOT}\fa-cover.png</file>
       <file>${PROJECT_ROOT}\faApp.mlapp</file>
+      <file>${PROJECT_ROOT}\FontAwesomeExtender.m</file>
+      <file>${PROJECT_ROOT}\FontAwesomeUpdater.m</file>
       <file>${PROJECT_ROOT}\html_colors.mat</file>
       <file>${PROJECT_ROOT}\icon-fa-list.png</file>
       <file>${PROJECT_ROOT}\icon-fa-paint-brush.png</file>
       <file>${PROJECT_ROOT}\icons-fa-256</file>
       <file>${PROJECT_ROOT}\info.xml</file>
+      <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
     <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}" name="Font Awesome Icons.mltbx" optional="false">D:\MATLAB\FA\Font Awesome Icons.mltbx</file>
+      <file location="${PROJECT_ROOT}" name="Font Awesome.mltbx" optional="false">D:\MATLAB\FA\Font Awesome.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
