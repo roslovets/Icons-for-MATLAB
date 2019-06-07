@@ -95,8 +95,11 @@ FontAwesomeDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\FontAwesomeExtender.m</file>
       <file>${PROJECT_ROOT}\FontAwesomeUpdater.m</file>
       <file>${PROJECT_ROOT}\html_colors.mat</file>
+      <file>${PROJECT_ROOT}\icon-fa-arrow-circle-up.png</file>
+      <file>${PROJECT_ROOT}\icon-fa-info.png</file>
       <file>${PROJECT_ROOT}\icon-fa-list.png</file>
       <file>${PROJECT_ROOT}\icon-fa-paint-brush.png</file>
+      <file>${PROJECT_ROOT}\icon-fa-save.png</file>
       <file>${PROJECT_ROOT}\icons-fa-256</file>
       <file>${PROJECT_ROOT}\info.xml</file>
       <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
