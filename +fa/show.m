@@ -12,10 +12,9 @@ if nargin > 1 && ~isempty(color)
         alpha = fa.Util.resize(alpha, size);
     end
     im = fa.Util.colorize(im, color);
-    h = imshow(im, argadd{:});
 else
-    h = imshow(impath, argadd{:});
 end
+h = imshow(im, argadd{:});
 % truesize(gca)
 h.AlphaData = alpha;
 if nargin < 4

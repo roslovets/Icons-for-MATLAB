@@ -13,8 +13,12 @@ classdef Util
         function [im, map, alpha] = imread(impath)
             %Read image as RGBA
             [im, map, alpha] = imread(impath);
-            if length(size(im)) == 2
+            if ndims(im) == 2
+                im(:) = 0;
                 im = cat(3, im, im, im);
+            end
+            if class(alpha) == "double"
+                alpha = uint8(alpha * 255);
             end
         end
         
@@ -128,7 +132,7 @@ classdef Util
         
         function root = getimroot()
             %Get icon images root dir
-            root = fullfile(fa.Util.getroot(), '..', 'icons-fa-256');
+            root = fullfile(fa.Util.getroot(), '..', 'icons', 'FontAwesome-fa');
         end
         
         function impath = getpath(name)
