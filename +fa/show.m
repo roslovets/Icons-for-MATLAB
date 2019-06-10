@@ -5,7 +5,7 @@ if nargin < 4
 else
     argadd = {'Parent', axes};
 end
-[im, ~, alpha] = imread(impath);
+[im, ~, alpha] = fa.Util.imread(impath);
 if nargin > 1 && ~isempty(color)
     if nargin > 2 && ~isempty(size)
         im = fa.Util.resize(im, size);

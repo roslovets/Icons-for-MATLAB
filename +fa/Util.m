@@ -1,6 +1,5 @@
 classdef Util
-    %UTIL Summary of this class goes here
-    %   Detailed explanation goes here
+    %Utilities
     
     properties
         
@@ -9,6 +8,14 @@ classdef Util
     methods (Static)
         function obj = Util()
             %Utilities
+        end
+        
+        function [im, map, alpha] = imread(impath)
+            %Read image as RGBA
+            [im, map, alpha] = imread(impath);
+            if length(size(im)) == 2
+                im = cat(3, im, im, im);
+            end
         end
         
         function im = resize(im, size)

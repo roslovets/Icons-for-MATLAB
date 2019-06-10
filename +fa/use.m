@@ -12,15 +12,17 @@ fileinfo = imfinfo(impath);
 [im, map, alpha] = imread(impath);
 if nargin > 1 && ~isempty(size)
     im2 = fa.Util.resize(im, size);
+    alpha2 = fa.Util.resize(alpha, size);
 else
     im2 = im;
+    alpha2 = alpha;
 end
 resname = "icon-fa-" + imname;
 resdir = pwd;
 respath = fullfile(resdir, resname);
 if nargin > 2 && ~isempty(color)
     im2 = fa.Util.colorize(im2, color);
-    imwrite(im2, respath, 'Alpha', alpha);
+    imwrite(im2, respath, 'Alpha', alpha2);
 else
     imwrite(im2, map, respath, 'Transparency', fileinfo.SimpleTransparencyData);
 end
