@@ -132,7 +132,7 @@ classdef Util
         
         function root = getimroot()
             %Get icon images root dir
-            root = fullfile(fa.Util.getroot(), '..', 'icons', 'FontAwesome-fa');
+            root = fullfile(fa.Util.getroot(), '..', 'icons', 'GoogleMaterial-mat');
         end
         
         function impath = getpath(name)
