@@ -20,4 +20,4 @@ h.AlphaData = alpha;
 if nargin < 4
     axes = h.Parent;
 end
-title(axes, name);
+title(axes, name, 'Interpreter', 'none');
