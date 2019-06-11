@@ -33,6 +33,8 @@ classdef Icons < handle
             if nargin > 0 && ~isempty(name)
                 icons = obj.icons.name;
                 icons = obj.icons(contains(icons, lower(name)), :);
+            else
+                icons = obj.icons;
             end
         end
         
@@ -183,6 +185,9 @@ classdef Icons < handle
                     icons = [icons; erase(fs, '.png')];
                     ps = [ps; repmat(packs(i), length(fs), 1)];
                 end
+            end
+            if isempty(icons)
+                icons = {};
             end
             obj.icons = table(icons, ps, 'VariableNames', {'name', 'pack'});
         end
