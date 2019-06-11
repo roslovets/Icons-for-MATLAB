@@ -130,9 +130,9 @@ classdef Util
             root = fileparts(mfilename('fullpath'));
         end
         
-        function root = getimroot()
+        function root = getiroot()
             %Get icon images root dir
-            root = fullfile(fa.Util.getroot(), '..', 'icons', 'GoogleMaterial-mat');
+            root = fullfile(fa.Util.getroot(), '..', 'icons');
         end
         
         function impath = getpath(name)

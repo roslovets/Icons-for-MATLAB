@@ -1,0 +1,5 @@
+function ps = packs()
+fs = struct2table(dir(fullfile(fa.Util.getiroot)));
+fs = fs(3:end, :);
+fs = 
+end
