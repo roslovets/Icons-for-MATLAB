@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<config>
-   <name>Font Awesome</name>
-   <pname>FontAwesome.prj</pname>
-   <type>toolbox</type>
-   <remote>https://github.com/roslovets/Font-Awesome-MATLAB.git</remote>
-   <extv>1.6</extv>
-</config>
-<!--Toolbox Extender configuration file. DO NOT DELETE-->
