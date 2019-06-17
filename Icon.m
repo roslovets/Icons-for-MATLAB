@@ -76,9 +76,7 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
             else
                 argadd = {'Parent', axes};
             end
-            if isempty(obj.Image)
-                obj.load();
-            end
+            obj.load();
             h = imshow(obj.Image.im, argadd{:});
             h.AlphaData = obj.Image.alpha;
             if nargin < 2
@@ -99,7 +97,6 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
                 error('Icon %s is not found', imname)
             end
             obj.readImage(impath);
-            obj.Name = name;
             obj.colorizeImage();
             obj.resizeImage();
         end
@@ -107,15 +104,7 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
         function rand(obj)
             icons = obj.Icons.name;
             name = icons(randi(length(icons)));
-            obj.load(name);
-        end
-        
-        function set.Color(obj, color)
-            % Set Icon color
-            obj.Color = color;
-            if ~isempty(obj.Image)
-                obj.load();
-            end
+            obj.Name = name;
         end
         
         function pickColor(obj)
@@ -126,11 +115,12 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
             obj.Color = color;
         end
         
-        function set.Scale(obj, scale)
-            % Set Icon color
-            obj.Scale = scale;
-            if ~isempty(obj.Image)
-                obj.load();
+        function set.Name(obj, name)
+            % Set Icon name
+            if ismember(name, obj.Icons.name)
+                obj.Name = name;
+            else
+                error('Unknown icon: %s', name);
             end
         end
         
@@ -323,7 +313,8 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
         function footer = getFooter(~)
             cname = mfilename('class');
             
-            footer = sprintf('<a href="matlab:methods(%s)">Methods</a>', cname);
+            footer = sprintf('<a href="matlab:details(%s)">All Properties</a>, <a href="matlab:methods(%s)">Methods</a>',...
+                cname, cname);
         end
     end
 end
