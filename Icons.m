@@ -9,6 +9,10 @@ classdef Icons < handle
         allpacks
         icons
         colors
+        name
+        image
+        color
+        scale = 1
     end
     
     methods
@@ -66,27 +70,61 @@ classdef Icons < handle
             axis(a, 'off')
         end
         
-        function show(obj, name, color, size, axes)
-            impath = obj.getpath(name);
-            if nargin < 5
+        function show(obj, axes)
+            if nargin < 2
                 argadd = {};
             else
                 argadd = {'Parent', axes};
             end
-            [im, ~, alpha] = obj.imread(impath);
-            if nargin > 2 && ~isempty(color)
-                if nargin > 3 && ~isempty(size)
-                    im = obj.resize(im, size);
-                    alpha = obj.resize(alpha, size);
-                end
-                im = obj.colorize(im, color);
+            if isempty(obj.image)
+                obj.load();
             end
-            h = imshow(im, argadd{:});
-            h.AlphaData = alpha;
-            if nargin < 5
+            h = imshow(obj.image.im, argadd{:});
+            h.AlphaData = obj.image.alpha;
+            if nargin < 2
                 axes = h.Parent;
             end
-            title(axes, name, 'Interpreter', 'none');
+            title(axes, obj.name, 'Interpreter', 'none');
+        end
+        
+        function load(obj, name)
+            if nargin < 2
+                name = obj.name;
+            else
+                obj.name = name;
+            end
+            impath = obj.getpath(name);
+            imname = obj.addpng(name);
+            if ~isfile(impath)
+                error('Icon %s is not found', imname)
+            end
+            [im, map, alpha] = obj.imread(impath);
+            obj.image = struct('im', im, 'map', map, 'alpha', alpha);
+            obj.name = name;
+            obj.colorize();
+            obj.resize();
+        end
+        
+        function rand(obj)
+            icons = obj.icons.name;
+            name = icons(randi(length(icons)));
+            obj.load(name);
+        end
+        
+        function set.color(obj, color)
+            % Set Icon color
+            obj.color = color;
+            if ~isempty(obj.image)
+                obj.load();
+            end
+        end
+        
+        function set.scale(obj, scale)
+            % Set Icon color
+            obj.scale = scale;
+            if ~isempty(obj.image)
+                obj.load();
+            end
         end
         
         function resname1 = use(obj, name, size, color)
@@ -205,16 +243,22 @@ classdef Icons < handle
             end
         end
         
-        function im = resize(obj, im, size)
+        function resize(obj, scale)
             %Change image size
-            if numel(size) == 1
-                size = [size size];
+            if nargin < 2
+                scale = obj.scale;
             end
-            im = imresize(im, size, 'Method', 'bilinear');
+            if scale ~= 1
+                obj.image.im = imresize(obj.image.im, scale, 'Method', 'bilinear');
+                obj.image.alpha = imresize(obj.image.alpha, scale, 'Method', 'bilinear');
+            end
         end
         
-        function im = colorize(obj, im, color)
+        function colorize(obj, color)
             %Colorize image
+            if nargin < 2
+                color = obj.color;
+            end
             if ~isnumeric(color)
                 if startsWith(color, '#')
                     color = obj.hex2rgb(color);
@@ -226,9 +270,11 @@ classdef Icons < handle
                 end
             end
             color = color * 255;
-            im(:,:,1) = color(1);
-            im(:,:,2) = color(2);
-            im(:,:,3) = color(3);
+            if ~isempty(obj.image) && ~isempty(color)
+                obj.image.im(:,:,1) = color(1);
+                obj.image.im(:,:,2) = color(2);
+                obj.image.im(:,:,3) = color(3);
+            end
         end
         
         function color = hex2rgb(obj, color)
