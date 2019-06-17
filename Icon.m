@@ -1,53 +1,53 @@
-classdef Icons < handle
+classdef Icon < handle & matlab.mixin.CustomDisplay
     %ICONS Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
-        root
-        iroot
-        packs
-        allpacks
-        icons
-        colors
-        name
-        image
-        color
-        scale = 1
+        Root
+        IRoot
+        Packs
+        AllPacks
+        Icons
+        Colors
+        Name
+        Image
+        Color
+        Scale = 1
     end
     
     methods
-        function obj = Icons()
+        function obj = Icon()
             %ICONS Construct an instance of this class
-            obj.getroot();
-            obj.getiroot();
-            obj.getpacks();
-            obj.geticons();
-            obj.getcolors();
+            obj.getRoot();
+            obj.getIRoot();
+            obj.getPacks();
+            obj.getIcons();
+            obj.getColors();
         end
         
-        function [packs, icons] = usepacks(obj, packs)
+        function [packs, icons] = usePacks(obj, packs)
             %Get icon packs
-            packs = intersect(obj.allpacks, packs);
-            obj.packs = packs;
-            icons = obj.geticons();
+            packs = intersect(obj.AllPacks, packs);
+            obj.Packs = packs;
+            icons = obj.getIcons();
         end
         
         function icons = search(obj, name)
             %Search icons by name
             if nargin > 0 && ~isempty(name)
-                icons = obj.icons.name;
-                icons = obj.icons(contains(icons, lower(name)), :);
+                icons = obj.Icons.name;
+                icons = obj.Icons(contains(icons, lower(name)), :);
             else
-                icons = obj.icons;
+                icons = obj.Icons;
             end
         end
         
-        function showcolors(obj)
+        function showColors(obj)
             %Show HTML colors
             f = figure('Name', 'HTML Colors');
             a = axes(f);
             hold(a, 'on');
-            colors = obj.colors;
+            colors = obj.Colors;
             n = colors.name;
             c = colors.value;
             c2 = [];
@@ -76,71 +76,78 @@ classdef Icons < handle
             else
                 argadd = {'Parent', axes};
             end
-            if isempty(obj.image)
+            if isempty(obj.Image)
                 obj.load();
             end
-            h = imshow(obj.image.im, argadd{:});
-            h.AlphaData = obj.image.alpha;
+            h = imshow(obj.Image.im, argadd{:});
+            h.AlphaData = obj.Image.alpha;
             if nargin < 2
                 axes = h.Parent;
             end
-            title(axes, obj.name, 'Interpreter', 'none');
+            title(axes, obj.Name, 'Interpreter', 'none');
         end
         
         function load(obj, name)
             if nargin < 2
-                name = obj.name;
+                name = obj.Name;
             else
-                obj.name = name;
+                obj.Name = name;
             end
-            impath = obj.getpath(name);
-            imname = obj.addpng(name);
+            impath = obj.getPath(name);
+            imname = obj.addPng(name);
             if ~isfile(impath)
                 error('Icon %s is not found', imname)
             end
-            [im, map, alpha] = obj.imread(impath);
-            obj.image = struct('im', im, 'map', map, 'alpha', alpha);
-            obj.name = name;
-            obj.colorize();
-            obj.resize();
+            obj.readImage(impath);
+            obj.Name = name;
+            obj.colorizeImage();
+            obj.resizeImage();
         end
         
         function rand(obj)
-            icons = obj.icons.name;
+            icons = obj.Icons.name;
             name = icons(randi(length(icons)));
             obj.load(name);
         end
         
-        function set.color(obj, color)
+        function set.Color(obj, color)
             % Set Icon color
-            obj.color = color;
-            if ~isempty(obj.image)
+            obj.Color = color;
+            if ~isempty(obj.Image)
                 obj.load();
             end
         end
         
-        function set.scale(obj, scale)
+        function pickColor(obj)
+            color = uisetcolor();
+            if ~color
+                color = [];
+            end
+            obj.Color = color;
+        end
+        
+        function set.Scale(obj, scale)
             % Set Icon color
-            obj.scale = scale;
-            if ~isempty(obj.image)
+            obj.Scale = scale;
+            if ~isempty(obj.Image)
                 obj.load();
             end
         end
         
         function resname1 = use(obj, name, size, color)
             if nargin < 2
-                icons = obj.icons.name;
+                icons = obj.Icons.name;
                 name = icons(randi(length(icons)));
             end
-            impath = obj.getpath(name);
-            imname = obj.addpng(name);
+            impath = obj.getPath(name);
+            imname = obj.addPng(name);
             if ~isfile(impath)
                 error('Icon %s is not found', imname)
             end
-            [im, ~, alpha] = obj.imread(impath);
+            [im, ~, alpha] = obj.readImage(impath);
             if nargin > 2 && ~isempty(size)
-                im2 = obj.resize(im, size);
-                alpha2 = obj.resize(alpha, size);
+                im2 = obj.resizeImage(im, size);
+                alpha2 = obj.resizeImage(alpha, size);
             else
                 im2 = im;
                 alpha2 = alpha;
@@ -149,7 +156,7 @@ classdef Icons < handle
             resdir = pwd;
             respath = fullfile(resdir, resname);
             if nargin > 3 && ~isempty(color)
-                im2 = obj.colorize(im2, color);
+                im2 = obj.colorizeImage(im2, color);
             end
             imwrite(im2, respath, 'Alpha', alpha2);
             if nargout > 0
@@ -160,7 +167,7 @@ classdef Icons < handle
     end
     
     methods (Hidden = true)
-        function imname = addpng(obj, name)
+        function imname = addPng(~, name)
             %Add .png to icon name
             if ~endsWith(name, '.png')
                 imname = name + ".png";
@@ -169,7 +176,7 @@ classdef Icons < handle
             end
         end
         
-        function name = rmpng(obj, imname)
+        function name = rmPng(~, imname)
             %Remove .png from icon name
             imname = char(imname);
             if endsWith(imname, '.png')
@@ -179,46 +186,46 @@ classdef Icons < handle
             end
         end
         
-        function root = getroot(obj)
+        function root = getRoot(obj)
             %Get toolbox root path
             root = fileparts(mfilename('fullpath'));
-            obj.root = root;
+            obj.Root = root;
         end
         
-        function iroot = getiroot(obj)
+        function iroot = getIRoot(obj)
             %Get icon images root dir
-            iroot = fullfile(obj.root, 'icons');
-            obj.iroot = iroot;
+            iroot = fullfile(obj.Root, 'icons');
+            obj.IRoot = iroot;
         end
         
-        function impath = getpath(obj, name, pack)
+        function impath = getPath(obj, name, pack)
             %Get image path
             if nargin < 3
-                pack = obj.icons.pack(obj.icons.name == name);
+                pack = obj.Icons.pack(obj.Icons.name == name);
                 pack = pack(1);
             end
-            impath = fullfile(obj.iroot, pack, obj.addpng(name));
+            impath = fullfile(obj.IRoot, pack, obj.addPng(name));
         end
         
-        function packs = getpacks(obj)
+        function packs = getPacks(obj)
             %Get icon packs
-            ds = struct2table(dir(obj.iroot));
+            ds = struct2table(dir(obj.IRoot));
             ds = ds(3:end, :);
             ds = ds(ds.isdir, :);
             packs = string(ds.name);
-            obj.allpacks = packs;
-            obj.packs = packs;
+            obj.AllPacks = packs;
+            obj.Packs = packs;
         end
         
-        function icons = geticons(obj, packs)
+        function icons = getIcons(obj, packs)
             if nargin < 2 || isempty(packs)
-                packs = string(obj.packs);
+                packs = string(obj.Packs);
             end
             icons = [];
             ps = [];
             if ~isempty(packs)
                 for i = 1 : length(packs)
-                    fs = dir(fullfile(obj.iroot, packs(i), '*.png'));
+                    fs = dir(fullfile(obj.IRoot, packs(i), '*.png'));
                     fs = string({fs.name})';
                     icons = [icons; erase(fs, '.png')];
                     ps = [ps; repmat(packs(i), length(fs), 1)];
@@ -227,37 +234,38 @@ classdef Icons < handle
             if isempty(icons)
                 icons = {};
             end
-            obj.icons = table(icons, ps, 'VariableNames', {'name', 'pack'});
+            obj.Icons = table(icons, ps, 'VariableNames', {'name', 'pack'});
         end
         
         
-        function [im, map, alpha] = imread(obj, impath)
+        function readImage(obj, impath)
             %Read image as RGBA
             [im, map, alpha] = imread(impath);
-            if ndims(im) == 2
+            if ismatrix(im)
                 im(:) = 0;
                 im = cat(3, im, im, im);
             end
             if class(alpha) == "double"
                 alpha = uint8(alpha * 255);
             end
+            obj.Image = struct('im', im, 'map', map, 'alpha', alpha);
         end
         
-        function resize(obj, scale)
+        function resizeImage(obj, scale)
             %Change image size
             if nargin < 2
-                scale = obj.scale;
+                scale = obj.Scale;
             end
             if scale ~= 1
-                obj.image.im = imresize(obj.image.im, scale, 'Method', 'bilinear');
-                obj.image.alpha = imresize(obj.image.alpha, scale, 'Method', 'bilinear');
+                obj.Image.im = imresize(obj.Image.im, scale, 'Method', 'bilinear');
+                obj.Image.alpha = imresize(obj.Image.alpha, scale, 'Method', 'bilinear');
             end
         end
         
-        function colorize(obj, color)
+        function colorizeImage(obj, color)
             %Colorize image
             if nargin < 2
-                color = obj.color;
+                color = obj.Color;
             end
             if ~isnumeric(color)
                 if startsWith(color, '#')
@@ -270,14 +278,14 @@ classdef Icons < handle
                 end
             end
             color = color * 255;
-            if ~isempty(obj.image) && ~isempty(color)
-                obj.image.im(:,:,1) = color(1);
-                obj.image.im(:,:,2) = color(2);
-                obj.image.im(:,:,3) = color(3);
+            if ~isempty(obj.Image) && ~isempty(color)
+                obj.Image.im(:,:,1) = color(1);
+                obj.Image.im(:,:,2) = color(2);
+                obj.Image.im(:,:,3) = color(3);
             end
         end
         
-        function color = hex2rgb(obj, color)
+        function color = hex2rgb(~, color)
             %Convert color from hex to 0-1 RGB
             c = [hex2dec(color(2:3)) hex2dec(color(4:5)) hex2dec(color(6:7))];
             color = c/255;
@@ -285,7 +293,7 @@ classdef Icons < handle
         
         function color = color2rgb(obj, color)
             %Convert color from name to 0-1 RGB
-            colors = obj.colors;
+            colors = obj.Colors;
             idx = colors.name == lower(string(color));
             if any(idx)
                 color = colors.value{idx};
@@ -295,15 +303,28 @@ classdef Icons < handle
             end
         end
         
-        function colors = getcolors(obj)
+        function colors = getColors(obj)
             %Load HTML colors
             res = load('html_colors.mat');
             colors = res.colors;
             colors = table(colors.keys', colors.values');
             colors.Properties.VariableNames = {'name', 'value'};
-            obj.colors = colors;
+            obj.Colors = colors;
         end
         
+    end
+    
+    methods (Access = protected)
+        function propgrp = getPropertyGroups(obj)
+            proplist = {'Name', 'Color', 'Scale'};
+            propgrp = matlab.mixin.util.PropertyGroup(proplist);
+        end
+        
+        function footer = getFooter(~)
+            cname = mfilename('class');
+            
+            footer = sprintf('<a href="matlab:methods(%s)">Methods</a>', cname);
+        end
     end
 end
 
