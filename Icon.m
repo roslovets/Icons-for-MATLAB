@@ -3,12 +3,15 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
     %   Detailed explanation goes here
     
     properties
-        Root
-        IRoot
+        Env = struct('Root', '', 'IconsDir', 'icons', 'DataDir', 'data',...
+            'ColorsFile', 'html_colors.mat');
+        Settings = struct('DispProps', ["Packs" "Name" "Color" "Scale"],...
+            'DispAllProps', false, 'ImPref', 'icon-')
         Packs
         AllPacks
         Icons
         Colors
+        Axes
         Name
         Image
         Color
@@ -19,15 +22,64 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
         function obj = Icon()
             %ICONS Construct an instance of this class
             obj.getRoot();
-            obj.getIRoot();
             obj.getPacks();
             obj.getIcons();
             obj.getColors();
         end
         
+        function [packs, allpacks] = getPacks(obj)
+            %Get icon packs
+            ds = struct2table(dir(obj.getIRoot));
+            ds = ds(3:end, :);
+            ds = ds(ds.isdir, :);
+            packs = string(ds.name);
+            obj.AllPacks = packs;
+            if isempty(obj.Packs)
+                obj.Packs = packs;
+            else
+                packs = obj.Packs;
+            end
+            allpacks = obj.AllPacks;
+        end
+        
+        function icons = getIcons(obj, packs)
+            %Get icons list
+            if nargin < 2 || isempty(packs)
+                packs = string(obj.Packs);
+            end
+            icons = [];
+            ps = [];
+            if ~isempty(packs)
+                for i = 1 : length(packs)
+                    fs = dir(fullfile(obj.getIRoot, packs(i), '*.png'));
+                    fs = string({fs.name})';
+                    icons = [icons; erase(fs, '.png')];
+                    ps = [ps; repmat(packs(i), length(fs), 1)];
+                end
+            end
+            if isempty(icons)
+                icons = {};
+            end
+            icons = table(icons, ps, 'VariableNames', {'Name', 'Pack'});
+            obj.Icons = icons;
+        end
+        
+        function colors = getColors(obj)
+            %Load HTML colors
+            res = load(fullfile(obj.Env.Root, obj.Env.DataDir, obj.Env.ColorsFile));
+            colors = res.colors;
+            colors = table(colors.keys', colors.values');
+            colors.Properties.VariableNames = {'Name', 'Value'};
+            obj.Colors = colors;
+        end
+        
         function [packs, icons] = usePacks(obj, packs)
             %Get icon packs
-            packs = intersect(obj.AllPacks, packs);
+            if isnumeric(packs)
+                packs = obj.AllPacks(packs);
+            else
+                packs = intersect(obj.AllPacks, packs);
+            end
             obj.Packs = packs;
             icons = obj.getIcons();
         end
@@ -35,7 +87,7 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
         function icons = search(obj, name)
             %Search icons by name
             if nargin > 0 && ~isempty(name)
-                icons = obj.Icons.name;
+                icons = obj.Icons.Name;
                 icons = obj.Icons(contains(icons, lower(name)), :);
             else
                 icons = obj.Icons;
@@ -48,8 +100,8 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
             a = axes(f);
             hold(a, 'on');
             colors = obj.Colors;
-            n = colors.name;
-            c = colors.value;
+            n = colors.Name;
+            c = colors.Value;
             c2 = [];
             ncols = 6;
             nrows = length(c) / ncols;
@@ -70,44 +122,41 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
             axis(a, 'off')
         end
         
-        function show(obj, axes)
-            if nargin < 2
-                argadd = {};
-            else
-                argadd = {'Parent', axes};
+        function show(obj, ax)
+            %Show icon
+            obj.validateName();
+            if nargin > 1
+                obj.Axes = ax;
+            end
+            if isempty(obj.Axes) || ~isvalid(obj.Axes)
+                f = figure('Name', obj.Name);
+                obj.Axes = axes(f);
             end
             obj.load();
-            h = imshow(obj.Image.im, argadd{:});
+            h = imshow(obj.Image.im, 'Parent', obj.Axes);
             h.AlphaData = obj.Image.alpha;
-            if nargin < 2
-                axes = h.Parent;
-            end
-            title(axes, obj.Name, 'Interpreter', 'none');
+            title(obj.Axes, obj.Name, 'Interpreter', 'none');
+            axes(obj.Axes);
         end
         
-        function load(obj, name)
-            if nargin < 2
-                name = obj.Name;
+        function obj = use(obj, icon)
+            %Use specified icon
+            obj.validateIcon(icon);
+            if isnumeric(icon)
+                obj.load(obj.Icons.Name{icon});
             else
-                obj.Name = name;
+                obj.load(icon);
             end
-            impath = obj.getPath(name);
-            imname = obj.addPng(name);
-            if ~isfile(impath)
-                error('Icon %s is not found', imname)
-            end
-            obj.readImage(impath);
-            obj.colorizeImage();
-            obj.resizeImage();
         end
         
-        function rand(obj)
-            icons = obj.Icons.name;
-            name = icons(randi(length(icons)));
-            obj.Name = name;
+        function obj = rand(obj)
+            %Use random icon
+            icon = randi(height(obj.Icons));
+            obj.use(icon);
         end
         
         function pickColor(obj)
+            %Pick color manually
             color = uisetcolor();
             if ~color
                 color = [];
@@ -117,46 +166,33 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
         
         function set.Name(obj, name)
             % Set Icon name
-            if ismember(name, obj.Icons.name)
-                obj.Name = name;
-            else
-                error('Unknown icon: %s', name);
+            obj.validateIcon(name);
+            obj.Name = name;
+        end
+        
+        function impath1 = save(obj, imdir)
+            %Save icon to disk
+            if nargin < 2
+                imdir = pwd;
+            end
+            obj.load();
+            obj.writeImage(imdir);
+            if nargout > 0
+                impath1 = impath;
             end
         end
         
-        function resname1 = use(obj, name, size, color)
-            if nargin < 2
-                icons = obj.Icons.name;
-                name = icons(randi(length(icons)));
-            end
-            impath = obj.getPath(name);
-            imname = obj.addPng(name);
-            if ~isfile(impath)
-                error('Icon %s is not found', imname)
-            end
-            [im, ~, alpha] = obj.readImage(impath);
-            if nargin > 2 && ~isempty(size)
-                im2 = obj.resizeImage(im, size);
-                alpha2 = obj.resizeImage(alpha, size);
-            else
-                im2 = im;
-                alpha2 = alpha;
-            end
-            resname = "icon-" + imname;
-            resdir = pwd;
-            respath = fullfile(resdir, resname);
-            if nargin > 3 && ~isempty(color)
-                im2 = obj.colorizeImage(im2, color);
-            end
-            imwrite(im2, respath, 'Alpha', alpha2);
-            if nargout > 0
-                resname1 = resname;
-            end
+        function dispAllProps(obj)
+            %Display all properties
+            obj.Settings.DispAllProps = true;
+            disp(obj);
         end
         
     end
     
+    
     methods (Hidden = true)
+        
         function imname = addPng(~, name)
             %Add .png to icon name
             if ~endsWith(name, '.png')
@@ -179,54 +215,35 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
         function root = getRoot(obj)
             %Get toolbox root path
             root = fileparts(mfilename('fullpath'));
-            obj.Root = root;
+            obj.Env.Root = root;
         end
         
         function iroot = getIRoot(obj)
             %Get icon images root dir
-            iroot = fullfile(obj.Root, 'icons');
-            obj.IRoot = iroot;
+            iroot = fullfile(obj.Env.Root, obj.Env.IconsDir);
         end
         
         function impath = getPath(obj, name, pack)
             %Get image path
             if nargin < 3
-                pack = obj.Icons.pack(obj.Icons.name == name);
+                pack = obj.Icons.Pack(obj.Icons.Name == name);
                 pack = pack(1);
             end
-            impath = fullfile(obj.IRoot, pack, obj.addPng(name));
+            impath = fullfile(obj.getIRoot, pack, obj.addPng(name));
         end
         
-        function packs = getPacks(obj)
-            %Get icon packs
-            ds = struct2table(dir(obj.IRoot));
-            ds = ds(3:end, :);
-            ds = ds(ds.isdir, :);
-            packs = string(ds.name);
-            obj.AllPacks = packs;
-            obj.Packs = packs;
+        function load(obj, name)
+            %Load icon image
+            if nargin > 1
+                obj.Name = name;
+            end
+            obj.validateName();
+            obj.validateIcon();
+            impath = obj.getPath(obj.Name);
+            obj.readImage(impath);
+            obj.colorizeImage();
+            obj.resizeImage();
         end
-        
-        function icons = getIcons(obj, packs)
-            if nargin < 2 || isempty(packs)
-                packs = string(obj.Packs);
-            end
-            icons = [];
-            ps = [];
-            if ~isempty(packs)
-                for i = 1 : length(packs)
-                    fs = dir(fullfile(obj.IRoot, packs(i), '*.png'));
-                    fs = string({fs.name})';
-                    icons = [icons; erase(fs, '.png')];
-                    ps = [ps; repmat(packs(i), length(fs), 1)];
-                end
-            end
-            if isempty(icons)
-                icons = {};
-            end
-            obj.Icons = table(icons, ps, 'VariableNames', {'name', 'pack'});
-        end
-        
         
         function readImage(obj, impath)
             %Read image as RGBA
@@ -238,7 +255,14 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
             if class(alpha) == "double"
                 alpha = uint8(alpha * 255);
             end
-            obj.Image = struct('im', im, 'map', map, 'alpha', alpha);
+            obj.Image = struct('path', impath, 'im', im, 'map', map, 'alpha', alpha);
+        end
+        
+        function impath = writeImage(obj, imdir)
+            %Write loaded image to specified directory
+            imname = obj.addPng(string(obj.Settings.ImPref) + obj.Name);
+            impath = fullfile(imdir, imname);
+            imwrite(obj.Image.im, impath, 'Alpha', obj.Image.alpha);
         end
         
         function resizeImage(obj, scale)
@@ -284,37 +308,56 @@ classdef Icon < handle & matlab.mixin.CustomDisplay
         function color = color2rgb(obj, color)
             %Convert color from name to 0-1 RGB
             colors = obj.Colors;
-            idx = colors.name == lower(string(color));
+            idx = colors.Name == lower(string(color));
             if any(idx)
-                color = colors.value{idx};
+                color = colors.Value{idx};
                 color = obj.hex2rgb(color);
             else
                 error('Unknown color: %s', color);
             end
         end
         
-        function colors = getColors(obj)
-            %Load HTML colors
-            res = load('html_colors.mat');
-            colors = res.colors;
-            colors = table(colors.keys', colors.values');
-            colors.Properties.VariableNames = {'name', 'value'};
-            obj.Colors = colors;
-        end
-        
     end
     
     methods (Access = protected)
+        
+        function validateIcon(obj, icon)
+            %Validate icon exists
+            if nargin < 2
+                icon = obj.Name;
+            end
+            if isnumeric(icon)
+                if icon < 1 || icon > height(obj.Icons)
+                    error('No such icon');
+                end
+            else
+                if ~ismember(icon, obj.Icons.Name)
+                    error('No such icon: %s', icon);
+                end
+            end
+        end
+        
+        function validateName(obj)
+            %Validate icon specified
+            if isempty(obj.Name)
+                error('Icon not loaded. Load icon with ''use'' or ''rand'' command');
+            end
+        end
+        
         function propgrp = getPropertyGroups(obj)
-            proplist = {'Name', 'Color', 'Scale'};
-            propgrp = matlab.mixin.util.PropertyGroup(proplist);
+            if obj.Settings.DispAllProps
+                props = properties(obj);
+                obj.Settings.DispAllProps = false;
+            else
+                props = obj.Settings.DispProps;
+            end
+            propgrp = matlab.mixin.util.PropertyGroup(props);
         end
         
         function footer = getFooter(~)
             cname = mfilename('class');
-            
-            footer = sprintf('<a href="matlab:details(%s)">All Properties</a>, <a href="matlab:methods(%s)">Methods</a>',...
-                cname, cname);
+            footer = sprintf(['<a href="matlab:disp(''Call dispAllProps method'')">All Properties</a>,'...
+                ' <a href="matlab:methods(%s)">Methods</a>'], cname);
         end
     end
 end
