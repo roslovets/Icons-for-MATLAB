@@ -1,12 +1,12 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration file="D:\MATLAB\FA\FontAwesome.prj" location="D:\MATLAB\FA" name="FontAwesome" target="target.toolbox" target-name="Package Toolbox">
+  <configuration file="D:\MATLAB\Icons\Icons.prj" location="D:\MATLAB\Icons" name="Icons" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>Icons</param.appname>
     <param.authnamewatermark>Pavel Roslovets</param.authnamewatermark>
     <param.email>roslovets@exponenta.ru</param.email>
     <param.company>ETMC Exponenta</param.company>
-    <param.summary />
+    <param.summary>Handsome icons for use in MATLAB</param.summary>
     <param.description />
-    <param.screenshot>${PROJECT_ROOT}\fa-cover.png</param.screenshot>
+    <param.screenshot>${PROJECT_ROOT}\icons-cover.png</param.screenshot>
     <param.version>1.0</param.version>
     <param.output>${PROJECT_ROOT}\Icons.mltbx</param.output>
     <param.products.name />
@@ -51,7 +51,6 @@ FontAwesomeDev.m</param.exclude.filters>
       <param.authnamewatermark />
       <param.email />
       <param.company />
-      <param.summary />
       <param.description />
       <param.version />
       <param.output />
@@ -88,29 +87,26 @@ FontAwesomeDev.m</param.exclude.filters>
     </fileset.rootdir>
     <fileset.rootfiles>
       <file>${PROJECT_ROOT}\.gitignore</file>
+      <file>${PROJECT_ROOT}\data</file>
       <file>${PROJECT_ROOT}\DesktopToolset.xml</file>
       <file>${PROJECT_ROOT}\doc</file>
-      <file>${PROJECT_ROOT}\fa-cover.png</file>
-      <file>${PROJECT_ROOT}\FontAwesomeExtender.m</file>
-      <file>${PROJECT_ROOT}\FontAwesomeUpdater.m</file>
-      <file>${PROJECT_ROOT}\html_colors.mat</file>
       <file>${PROJECT_ROOT}\icon-fa-arrow-circle-up.png</file>
       <file>${PROJECT_ROOT}\icon-fa-list.png</file>
       <file>${PROJECT_ROOT}\icon-fa-save.png</file>
       <file>${PROJECT_ROOT}\icon-mat-help.png</file>
       <file>${PROJECT_ROOT}\icon-mat-palette.png</file>
+      <file>${PROJECT_ROOT}\Icon.m</file>
       <file>${PROJECT_ROOT}\icons</file>
-      <file>${PROJECT_ROOT}\Icons.m</file>
+      <file>${PROJECT_ROOT}\icons-cover.png</file>
       <file>${PROJECT_ROOT}\IconsApp.mlapp</file>
+      <file>${PROJECT_ROOT}\IconUtils.m</file>
       <file>${PROJECT_ROOT}\info.xml</file>
-      <file>${PROJECT_ROOT}\resources</file>
-      <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
     <fileset.package />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}" name="Icons.mltbx" optional="false">D:\MATLAB\FA\Icons.mltbx</file>
+      <file location="${PROJECT_ROOT}" name="Icons.mltbx" optional="false">D:\MATLAB\Icons\Icons.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
