@@ -3,6 +3,8 @@ classdef Icon < IconUtils
     %   Detailed explanation goes here
     
     properties
+        Settings = struct('DispProps', ["Name" "Color" "Scale"],...
+            'DispAllProps', false, 'ImPref', 'icon-')
         Name
         Image
         Color
@@ -11,9 +13,12 @@ classdef Icon < IconUtils
     end
     
     methods
-        function obj = Icon()
+        function obj = Icon(name)
             %ICONS Construct an instance of this class
             obj@IconUtils();
+            if nargin > 0
+                obj.use(name);
+            end
         end
         
         function icons = search(obj, name)
@@ -40,7 +45,9 @@ classdef Icon < IconUtils
             h = imshow(obj.Image.im, 'Parent', obj.Axes);
             h.AlphaData = obj.Image.alpha;
             title(obj.Axes, obj.Name, 'Interpreter', 'none');
-            axes(obj.Axes);
+            if class(obj.Axes) == "matlab.graphics.axis.Axes"
+                axes(obj.Axes);
+            end
         end
         
         function obj = use(obj, icon)
@@ -72,6 +79,16 @@ classdef Icon < IconUtils
             obj.Color = color;
         end
         
+        function obj = setColor(obj, color)
+            %Set color
+            obj.Color = color;
+        end
+        
+        function obj = setScale(obj, scale)
+            %Set color
+            obj.Scale = scale;
+        end
+        
         function impath1 = save(obj, imdir)
             %Save icon to disk
             if nargin < 2
@@ -84,7 +101,7 @@ classdef Icon < IconUtils
             end
         end
         
-        function pickColor(obj)
+        function color = pickColor(obj)
             %Pick color manually
             color = uisetcolor();
             if ~color
@@ -117,8 +134,12 @@ classdef Icon < IconUtils
             %Load icon image
             obj.validateName();
             obj.readImage();
-            obj.colorizeImage();
-            obj.resizeImage();
+            if ~isempty(obj.Color)
+                obj.colorizeImage();
+            end
+            if obj.Scale ~= 1
+                obj.resizeImage();
+            end
         end
         
         function readImage(obj)
@@ -145,10 +166,8 @@ classdef Icon < IconUtils
         function resizeImage(obj)
             %Change image size
             scale = obj.Scale;
-            if scale ~= 1
-                obj.Image.im = imresize(obj.Image.im, scale, 'Method', 'bilinear');
-                obj.Image.alpha = imresize(obj.Image.alpha, scale, 'Method', 'bilinear');
-            end
+            obj.Image.im = imresize(obj.Image.im, scale, 'Method', 'bilinear');
+            obj.Image.alpha = imresize(obj.Image.alpha, scale, 'Method', 'bilinear');
         end
         
         function colorizeImage(obj)
@@ -204,18 +223,20 @@ classdef Icon < IconUtils
             if nargin < 2
                 color = obj.Color;
             end
-            if isnumeric(color)
-                assert(length(color) == 3, 'Invalid color: %s', num2str(color));
-            else
-                if startsWith(color, '#')
-                    assert(length(char(color)) == 7, 'Invalid color: %s', color);
-                elseif startsWith(color, '[') && endsWith(color, ']')
-                    color = extractBetween(color, '[', ']');
-                    color = str2num(color{1});
+            if ~isempty(color)
+                if isnumeric(color)
                     assert(length(color) == 3, 'Invalid color: %s', num2str(color));
                 else
-                    if ~ismember(color, obj.Colors.Name)
-                        error('Unknown color: %s', color);
+                    if startsWith(color, '#')
+                        assert(length(char(color)) == 7, 'Invalid color: %s', color);
+                    elseif startsWith(color, '[') && endsWith(color, ']')
+                        color = extractBetween(color, '[', ']');
+                        color = str2num(color{1});
+                        assert(length(color) == 3, 'Invalid color: %s', num2str(color));
+                    else
+                        if ~ismember(color, obj.Colors.Name)
+                            error('Unknown color: %s', color);
+                        end
                     end
                 end
             end

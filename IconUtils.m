@@ -4,9 +4,7 @@ classdef IconUtils < handle & matlab.mixin.CustomDisplay
     
     properties
         Env = struct('Root', '', 'IconsDir', 'icons', 'DataDir', 'data',...
-            'ColorsFile', 'html_colors.mat');
-        Settings = struct('DispProps', ["Packs" "Name" "Color" "Scale"],...
-            'DispAllProps', false, 'ImPref', 'icon-')
+            'ColorsFile', 'html_colors.mat')
         Icons
         Colors
         Packs
