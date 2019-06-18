@@ -42,12 +42,14 @@ classdef Icon < IconUtils
                 obj.Axes = axes(f);
             end
             obj.process();
-            h = imshow(obj.Image.im, 'Parent', obj.Axes);
-            h.AlphaData = obj.Image.alpha;
-            title(obj.Axes, obj.Name, 'Interpreter', 'none');
+            h = imshow(obj.Image.Im, 'Parent', obj.Axes);
+            h.AlphaData = obj.Image.Alpha;
             if class(obj.Axes) == "matlab.graphics.axis.Axes"
                 axes(obj.Axes);
             end
+            s = obj.getSize();
+            xlim(obj.Axes, [0 s(2)]);
+            ylim(obj.Axes, [0 s(1)]);
         end
         
         function obj = use(obj, icon)
@@ -87,6 +89,12 @@ classdef Icon < IconUtils
         function obj = setScale(obj, scale)
             %Set color
             obj.Scale = scale;
+        end
+        
+        function s = getSize(obj)
+            %Get image size
+            s = size(obj.Image.Im);
+            s = s(1:2);
         end
         
         function impath1 = save(obj, imdir)
@@ -153,21 +161,21 @@ classdef Icon < IconUtils
             if class(alpha) == "double"
                 alpha = uint8(alpha * 255);
             end
-            obj.Image = struct('path', impath, 'im', im, 'map', map, 'alpha', alpha);
+            obj.Image = struct('path', impath, 'Im', im, 'Map', map, 'Alpha', alpha);
         end
         
         function impath = writeImage(obj, imdir)
             %Write loaded image to specified directory
             imname = string(obj.Settings.ImPref) + obj.Name + ".png";
             impath = fullfile(imdir, imname);
-            imwrite(obj.Image.im, impath, 'Alpha', obj.Image.alpha);
+            imwrite(obj.Image.Im, impath, 'Alpha', obj.Image.Alpha);
         end
         
         function resizeImage(obj)
             %Change image size
             scale = obj.Scale;
-            obj.Image.im = imresize(obj.Image.im, scale, 'Method', 'bilinear');
-            obj.Image.alpha = imresize(obj.Image.alpha, scale, 'Method', 'bilinear');
+            obj.Image.Im = imresize(obj.Image.Im, scale, 'Method', 'bilinear');
+            obj.Image.Alpha = imresize(obj.Image.Alpha, scale, 'Method', 'bilinear');
         end
         
         function colorizeImage(obj)
@@ -185,9 +193,9 @@ classdef Icon < IconUtils
             end
             color = color * 255;
             if ~isempty(obj.Image) && ~isempty(color)
-                obj.Image.im(:,:,1) = color(1);
-                obj.Image.im(:,:,2) = color(2);
-                obj.Image.im(:,:,3) = color(3);
+                obj.Image.Im(:,:,1) = color(1);
+                obj.Image.Im(:,:,2) = color(2);
+                obj.Image.Im(:,:,3) = color(3);
             end
         end
         
