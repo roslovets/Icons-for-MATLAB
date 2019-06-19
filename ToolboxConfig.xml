@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+   <name>Icons</name>
+   <pname>Icons.prj</pname>
+   <type>toolbox</type>
+   <remote>https://github.com/roslovets/Icons-for-MATLAB.git</remote>
+   <extv>1.6</extv>
+</config>
+<!--Toolbox Extender configuration file. DO NOT DELETE-->

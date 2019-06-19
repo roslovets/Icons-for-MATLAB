@@ -4,10 +4,10 @@
     <param.authnamewatermark>Pavel Roslovets</param.authnamewatermark>
     <param.email>roslovets@exponenta.ru</param.email>
     <param.company>ETMC Exponenta</param.company>
-    <param.summary>Handsome icons for use in MATLAB</param.summary>
+    <param.summary>Hi-res professional icons for use in MATLAB, Simulink, presentations, web, etc.</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}\icons-cover.png</param.screenshot>
-    <param.version>1.0</param.version>
+    <param.version>0.1</param.version>
     <param.output>${PROJECT_ROOT}\Icons.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -18,7 +18,7 @@
 work
 test.m
 dev_on.m
-FontAwesomeDev.m</param.exclude.filters>
+IconsDev.m</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples />
     <param.demosxml />
@@ -52,7 +52,6 @@ FontAwesomeDev.m</param.exclude.filters>
       <param.email />
       <param.company />
       <param.description />
-      <param.version />
       <param.output />
       <param.products.name />
       <param.products.id />
@@ -99,8 +98,11 @@ FontAwesomeDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\icons</file>
       <file>${PROJECT_ROOT}\icons-cover.png</file>
       <file>${PROJECT_ROOT}\IconsApp.mlapp</file>
+      <file>${PROJECT_ROOT}\IconsExtender.m</file>
+      <file>${PROJECT_ROOT}\IconsUpdater.m</file>
       <file>${PROJECT_ROOT}\IconUtils.m</file>
       <file>${PROJECT_ROOT}\info.xml</file>
+      <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
