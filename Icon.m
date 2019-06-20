@@ -69,11 +69,6 @@ classdef Icon < IconUtils
             obj.use(icon);
         end
         
-        function store(obj)
-            %Open library
-            winopen(obj.getIRoot());
-        end
-        
         function set.Name(obj, name)
             % Set Icon name
             obj.validateIcon(name);

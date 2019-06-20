@@ -20,6 +20,11 @@ classdef IconUtils < handle & matlab.mixin.CustomDisplay
             obj.getColors();
         end
         
+        function lib(obj)
+            %Open library
+            winopen(obj.getIRoot());
+        end
+        
         function [packs, allpacks] = getPacks(obj)
             %Get icon packs
             ds = struct2table(dir(obj.getIRoot));
