@@ -109,7 +109,7 @@ classdef Icon < IconUtils
             end
         end
         
-        function color = pickColor(obj)
+        function [obj, color] = pickColor(obj)
             %Pick color manually
             color = uisetcolor();
             if ~color
@@ -131,6 +131,10 @@ classdef Icon < IconUtils
         
         function impath = getPath(obj, name, pack)
             %Get image path
+            obj.validateName();
+            if nargin < 2
+                name = obj.Name;
+            end
             if nargin < 3
                 pack = obj.Icons.Pack(obj.Icons.Name == name);
                 pack = pack(1);
@@ -152,7 +156,7 @@ classdef Icon < IconUtils
         
         function readImage(obj)
             %Read image as RGBA
-            impath = obj.getPath(obj.Name);
+            impath = obj.getPath();
             [im, map, alpha] = imread(impath);
             if ismatrix(im)
                 im(:) = 0;
