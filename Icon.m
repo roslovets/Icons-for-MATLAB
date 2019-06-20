@@ -1,6 +1,7 @@
 classdef Icon < IconUtils
-    %ICONS Summary of this class goes here
-    %   Detailed explanation goes here
+    % Main class for work with icons
+    % By Pavel Roslovets, ETMC Exponenta
+    % https://github.com/roslovets/Icons-for-MATLAB
     
     properties
         Settings = struct('DispProps', ["Name" "Color" "Scale"],...

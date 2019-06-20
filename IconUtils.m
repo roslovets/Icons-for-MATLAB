@@ -1,6 +1,7 @@
 classdef IconUtils < handle & matlab.mixin.CustomDisplay
-    %ICONS Summary of this class goes here
-    %   Detailed explanation goes here
+    % Utilities class for work with icons
+    % By Pavel Roslovets, ETMC Exponenta
+    % https://github.com/roslovets/Icons-for-MATLAB
     
     properties
         Env = struct('Root', '', 'IconsDir', 'icons', 'DataDir', 'data',...
