@@ -116,20 +116,6 @@ classdef IconsDev < handle
             web(obj.TE.remote + "/releases/edit/v" + obj.vp, '-browser')
         end
         
-    end
-    
-    
-    methods (Hidden)
-        
-        function updateroot(obj)
-            % Update project root
-            service = com.mathworks.toolbox_packaging.services.ToolboxPackagingService;
-            configKey = service.openProject(obj.TE.getppath());
-            service.removeToolboxRoot(configKey);
-            service.setToolboxRoot(configKey, obj.TE.root);
-            service.closeProject(configKey);
-        end
-        
         function gendoc(obj)
             % Generate html from mlx doc
             docdir = fullfile(obj.TE.root, 'doc');
@@ -143,6 +129,20 @@ classdef IconsDev < handle
                 matlab.internal.liveeditor.openAndConvert(char(fpath), char(htmlpath));
                 disp('Doc has been generated');
             end
+        end
+        
+    end
+    
+    
+    methods (Hidden)
+        
+        function updateroot(obj)
+            % Update project root
+            service = com.mathworks.toolbox_packaging.services.ToolboxPackagingService;
+            configKey = service.openProject(obj.TE.getppath());
+            service.removeToolboxRoot(configKey);
+            service.setToolboxRoot(configKey, obj.TE.root);
+            service.closeProject(configKey);
         end
         
         function seticons(obj)

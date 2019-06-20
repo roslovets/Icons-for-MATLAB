@@ -265,6 +265,16 @@ classdef Icon < IconUtils
             footer = sprintf(['<a href="matlab:disp(''Call dispAllProps method to see all properties'')">All Properties</a>,'...
                 ' <a href="matlab:methods(%s)">Methods</a>'], cname);
         end
+        
+    end
+    
+    methods (Static)
+        
+        function doc(varargin)
+            TE = IconsExtender();
+            TE.doc(varargin{:})
+        end
+        
     end
 end
 
