@@ -15,7 +15,7 @@
         <tocitem target="AddIcons.html" image="HelpIcon.FUNCTION">
             Adding new icons to library
         </tocitem>
-        <tocitem target="Projects.html" image="HelpIcon.FUNCTION">
+        <tocitem target="matlab:web('https://roslovets.github.io')" image="HelpIcon.FUNCTION">
             Check out other projects
         </tocitem>
     </tocitem>
