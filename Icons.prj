@@ -85,9 +85,11 @@ IconsDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}</file>
     </fileset.rootdir>
     <fileset.rootfiles>
+      <file>${PROJECT_ROOT}\.git</file>
       <file>${PROJECT_ROOT}\.gitignore</file>
       <file>${PROJECT_ROOT}\data</file>
       <file>${PROJECT_ROOT}\DesktopToolset.xml</file>
+      <file>${PROJECT_ROOT}\dev_on.m</file>
       <file>${PROJECT_ROOT}\doc</file>
       <file>${PROJECT_ROOT}\icon-fa-arrow-circle-up.png</file>
       <file>${PROJECT_ROOT}\icon-fa-list.png</file>
@@ -97,12 +99,17 @@ IconsDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\Icon.m</file>
       <file>${PROJECT_ROOT}\icons</file>
       <file>${PROJECT_ROOT}\icons-cover.png</file>
+      <file>${PROJECT_ROOT}\Icons.mltbx</file>
+      <file>${PROJECT_ROOT}\Icons.prj</file>
       <file>${PROJECT_ROOT}\IconsApp.mlapp</file>
+      <file>${PROJECT_ROOT}\IconsDev.m</file>
       <file>${PROJECT_ROOT}\IconsExtender.m</file>
       <file>${PROJECT_ROOT}\IconsUpdater.m</file>
       <file>${PROJECT_ROOT}\IconUtils.m</file>
       <file>${PROJECT_ROOT}\info.xml</file>
+      <file>${PROJECT_ROOT}\test.m</file>
       <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
+      <file>${PROJECT_ROOT}\work</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
