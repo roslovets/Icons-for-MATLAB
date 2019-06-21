@@ -12,18 +12,11 @@
         <tocitem target="CLI.html" image="HelpIcon.FUNCTION">
             Command-line interface
         </tocitem>
-        <tocitem target="ToolboxDev.html" image="HelpIcon.FUNCTION">
-            ToolboxDev (class)
+        <tocitem target="AddIcons.html" image="HelpIcon.FUNCTION">
+            Adding new icons to library
         </tocitem>
-        <tocitem target="ToolboxUpdater.html" image="HelpIcon.FUNCTION">
-            ToolboxUpdater (class)
-        </tocitem>
-        <tocitem target="ToolboxStorage.html" image="HelpIcon.FUNCTION">
-            ToolboxStorage (class)
-        </tocitem>
-        <tocitem target="https://github.com/ETMC-Exponenta/ToolboxExtender" 
-                 image="$toolbox/matlab/icons/webicon.gif">
-        Toolbox Extender on GitHub
+        <tocitem target="Projects.html" image="HelpIcon.FUNCTION">
+            Check out other projects
         </tocitem>
     </tocitem>
 </toc>
