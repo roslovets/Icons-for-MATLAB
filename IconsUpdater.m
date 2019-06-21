@@ -18,7 +18,7 @@ classdef IconsUpdater < handle
             end
         end        
         
-        function [vr, r] = gvr(obj)
+        function [vr, r, err] = gvr(obj)
             % Get remote version from GitHub
             iname = string(extractAfter(obj.TE.remote, 'https://github.com/'));
             url = "https://api.github.com/repos/" + iname + "/releases/latest";
@@ -26,7 +26,8 @@ classdef IconsUpdater < handle
                 r = webread(url);
                 vr = r.tag_name;
                 vr = erase(vr, 'v');
-            catch
+                err = [];
+            catch err
                 vr = '';
                 r = '';
             end
@@ -70,12 +71,24 @@ classdef IconsUpdater < handle
             end
         end
         
-        function [isupd, r] = isupdate(obj)
+        function [isupd, r] = isupdate(obj, cbfun, delay)
             % Check that update is available
             if obj.isonline()
                 vc = obj.TE.gvc();
-                [vr, r] = obj.gvr();
-                isupd = ~isempty(vr) & ~isequal(vc, vr);
+                if nargin < 2
+                    [vr, r] = obj.gvr();
+                    isupd = ~isempty(vr) & ~isequal(vc, vr);
+                else
+                    if nargin < 3
+                        delay = 1;
+                    end
+                    isupd = false;
+                    r = '';
+                    t = timer('ExecutionMode', 'singleShot', 'StartDelay', delay);
+                    t.TimerFcn = @(~, ~) obj.isupd_async(cbfun, vc);
+                    t.Period = 1;
+                    start(t);
+                end
             else
                 r = [];
                 isupd = false;
@@ -107,5 +120,17 @@ classdef IconsUpdater < handle
         end
         
     end
+    
+    methods (Hidden)
+        
+        function isupd_async(obj, cbfun, vc)
+            % Task for async ver timer
+            vr = obj.gvr();
+            isupd = ~isempty(vr) & ~isequal(vc, vr);
+            cbfun(isupd);
+        end
+        
+    end
+    
 end
 

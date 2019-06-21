@@ -53,14 +53,7 @@ classdef IconsDev < handle
                 obj.gendoc();
             end
             if nargin > 1 && ~isempty(vp)
-                if obj.TE.type == "toolbox"
-                    matlab.addons.toolbox.toolboxVersion(ppath, vp);
-                else
-                    txt = obj.TE.readtxt(ppath);
-                    txt = regexprep(txt, '(?<=(<param.version>))(.*?)(?=(</param.version>))', vp);
-                    txt = strrep(txt, '<param.version />', '');
-                    obj.TE.writetxt(txt, ppath);
-                end
+                obj.setver(vp);
             end
             [~, bname] = fileparts(obj.TE.pname);
             bpath = fullfile(obj.TE.root, bname);
@@ -128,6 +121,19 @@ classdef IconsDev < handle
                 htmlpath = fullfile(fs.folder(i), fname + ".html");
                 matlab.internal.liveeditor.openAndConvert(char(fpath), char(htmlpath));
                 disp('Doc has been generated');
+            end
+        end
+        
+        function setver(obj, vp)
+            % Set version
+            ppath = obj.TE.getppath();
+            if obj.TE.type == "toolbox"
+                matlab.addons.toolbox.toolboxVersion(ppath, vp);
+            else
+                txt = obj.TE.readtxt(ppath);
+                txt = regexprep(txt, '(?<=(<param.version>))(.*?)(?=(</param.version>))', vp);
+                txt = strrep(txt, '<param.version />', '');
+                obj.TE.writetxt(txt, ppath);
             end
         end
         
