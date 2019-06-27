@@ -93,11 +93,11 @@ IconsDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\DesktopToolset.xml</file>
       <file>${PROJECT_ROOT}\dev_on.m</file>
       <file>${PROJECT_ROOT}\doc</file>
-      <file>${PROJECT_ROOT}\icon-fa-arrow-circle-up.png</file>
       <file>${PROJECT_ROOT}\icon-fa-list.png</file>
       <file>${PROJECT_ROOT}\icon-fa-save.png</file>
       <file>${PROJECT_ROOT}\icon-mat-help.png</file>
       <file>${PROJECT_ROOT}\icon-mat-palette.png</file>
+      <file>${PROJECT_ROOT}\icon-my-update-daa520.png</file>
       <file>${PROJECT_ROOT}\Icon.m</file>
       <file>${PROJECT_ROOT}\icons</file>
       <file>${PROJECT_ROOT}\icons-cover.png</file>
@@ -111,7 +111,6 @@ IconsDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\info.xml</file>
       <file>${PROJECT_ROOT}\test.m</file>
       <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
-      <file>${PROJECT_ROOT}\ToolboxExtender.mltbx</file>
       <file>${PROJECT_ROOT}\work</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
