@@ -127,22 +127,39 @@ classdef IconUtils < handle & matlab.mixin.CustomDisplay
             iroot = fullfile(obj.Env.Root, obj.Env.IconsDir);
         end
         
+        function color = color2rgb(obj, color)
+            % Convert color from RGB or text to hex format
+            if ~isnumeric(color)
+                if startsWith(color, '#')
+                    color = obj.hex2rgb(color);
+                elseif startsWith(color, '[') && endsWith(color, ']')
+                    color = extractBetween(color, '[', ']');
+                    color = str2num(color{1});
+                else
+                    colors = obj.Colors;
+                    idx = colors.Name == lower(string(color));
+                    if any(idx)
+                        color = colors.Value{idx};
+                        color = obj.hex2rgb(color);
+                    else
+                        error('Unknown color: %s', color);
+                    end
+                end
+            elseif any(color > 1)
+                color = color / 255;
+            end
+        end
+        
         function color = hex2rgb(~, color)
             %Convert color from hex to 0-1 RGB
             c = [hex2dec(color(2:3)) hex2dec(color(4:5)) hex2dec(color(6:7))];
             color = c/255;
         end
         
-        function color = color2rgb(obj, color)
-            %Convert color from name to 0-1 RGB
-            colors = obj.Colors;
-            idx = colors.Name == lower(string(color));
-            if any(idx)
-                color = colors.Value{idx};
-                color = obj.hex2rgb(color);
-            else
-                error('Unknown color: %s', color);
-            end
+        function color = rgb2hex(~, color)
+            %Convert color from 0-1 RGB to hex
+            color = round(color * 255);
+            color = "#" + join(string(dec2hex(color, 2)), '');
         end
         
     end
