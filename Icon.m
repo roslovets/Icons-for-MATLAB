@@ -79,7 +79,10 @@ classdef Icon < IconUtils
         function set.Color(obj, color)
             % Set Icon name
             obj.validateColor(color);
-            obj.Color = color;
+            if isempty(color)
+                color = [];
+            end
+            obj.Color = obj.color2rgb(color);
         end
         
         function obj = setColor(obj, color)
@@ -171,7 +174,15 @@ classdef Icon < IconUtils
         
         function impath = writeImage(obj, imdir)
             %Write loaded image to specified directory
-            imname = string(obj.Settings.ImPref) + obj.Name + ".png";
+            imPost = '';
+            if ~isempty(obj.Color)
+                color = char(obj.rgb2hex(obj.Color));
+                imPost = "-" + lower(color(2:end));
+            end
+            if obj.Scale ~= 1
+                imPost = imPost + "-" + round(obj.Scale*100);
+            end
+            imname = string(obj.Settings.ImPref) + obj.Name + string(imPost) + ".png";
             impath = fullfile(imdir, imname);
             imwrite(obj.Image.Im, impath, 'Alpha', obj.Image.Alpha);
         end
@@ -185,18 +196,7 @@ classdef Icon < IconUtils
         
         function colorizeImage(obj)
             %Colorize image
-            color = obj.Color;
-            if ~isnumeric(color)
-                if startsWith(color, '#')
-                    color = obj.hex2rgb(color);
-                elseif startsWith(color, '[') && endsWith(color, ']')
-                    color = extractBetween(color, '[', ']');
-                    color = str2num(color{1});
-                else
-                    color = obj.color2rgb(color);
-                end
-            end
-            color = color * 255;
+            color = obj.Color * 255;
             if ~isempty(obj.Image) && ~isempty(color)
                 obj.Image.Im(:,:,1) = color(1);
                 obj.Image.Im(:,:,2) = color(2);
