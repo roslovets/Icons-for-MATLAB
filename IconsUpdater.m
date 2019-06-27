@@ -57,6 +57,7 @@ classdef IconsUpdater < handle
         function sum = getrelsum(obj)
             % Get release notes summary
             rel = obj.getrel();
+            sum = '';
             if contains(rel, '# Summary')
                 sum = extractAfter(rel, '# Summary');
                 if contains(sum, '#')
