@@ -15,6 +15,7 @@
     <param.platforms />
     <param.guid>eadd37fa-5639-4914-86c0-a4a206c0dccc</param.guid>
     <param.exclude.filters>.git
+.gitignore
 work
 test.m
 dev_on.m
@@ -31,7 +32,9 @@ IconsDev.m</param.exclude.filters>
     <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
     <param.exported.on.package>false</param.exported.on.package>
-    <param.required.addons />
+    <param.required.addons>
+      <requiredaddons />
+    </param.required.addons>
     <param.matlab.project.id />
     <param.matlab.project.name />
     <param.release.start />
@@ -64,7 +67,6 @@ IconsDev.m</param.exclude.filters>
       <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
       <param.exported.on.package />
-      <param.required.addons />
       <param.matlab.project.id />
       <param.matlab.project.name />
       <param.release.start />
@@ -109,6 +111,7 @@ IconsDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\info.xml</file>
       <file>${PROJECT_ROOT}\test.m</file>
       <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
+      <file>${PROJECT_ROOT}\ToolboxExtender.mltbx</file>
       <file>${PROJECT_ROOT}\work</file>
     </fileset.rootfiles>
     <fileset.depfun.included />

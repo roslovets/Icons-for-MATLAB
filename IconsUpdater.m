@@ -4,42 +4,79 @@ classdef IconsUpdater < handle
     % https://github.com/ETMC-Exponenta/ToolboxExtender
     
     properties
-        TE % Toolbox Extender
+        ext % Toolbox Extender
         vr % latest remote version form internet (GitHub)
+    end
+    
+    properties (Hidden)
+        res % GitHub resources
+        rel % release notes
     end
     
     methods
         function obj = IconsUpdater(extender)
             % Init
             if nargin < 1
-                obj.TE = IconsExtender;
+                obj.ext = IconsExtender;
             else
-                obj.TE = extender;
+                obj.ext = extender;
             end
-        end        
+        end
         
-        function [vr, r, err] = gvr(obj)
-            % Get remote version from GitHub
-            iname = string(extractAfter(obj.TE.remote, 'https://github.com/'));
+        function [res, err] = fetch(obj)
+            % Fetch resources from GitHub
+            iname = string(extractAfter(obj.ext.remote, 'https://github.com/'));
             url = "https://api.github.com/repos/" + iname + "/releases/latest";
+            res = '';
             try
-                r = webread(url);
-                vr = r.tag_name;
-                vr = erase(vr, 'v');
+                res = webread(url);
                 err = [];
+                obj.res = res;
+                obj.vr = erase(res.tag_name, 'v');
+                obj.rel = res.body;
             catch err
-                vr = '';
-                r = '';
             end
-            obj.vr = vr;
+        end
+        
+        function vr = gvr(obj)
+            % Get remote version from GitHub
+            if isempty(obj.vr)
+                obj.fetch();
+            end
+            vr = obj.vr;
+        end
+        
+        function rel = getrel(obj)
+            % Get release notes
+            if isempty(obj.res)
+                obj.fetch();
+            end
+            rel = obj.rel;
+        end
+        
+        function sum = getrelsum(obj)
+            % Get release notes summary
+            rel = obj.getrel();
+            if contains(rel, '# Summary')
+                sum = extractAfter(rel, '# Summary');
+                if contains(sum, '#')
+                    sum = extractBefore(sum, '#');
+                end
+            end
+            sum = string(strtrim(sum));
+        end
+        
+        function webrel(obj)
+            % Open GitHub releases webpage
+            web(obj.ext.remote + "/releases");
         end
         
         function [vc, vr] = ver(obj)
             % Check curent installed and remote versions
-            vc = obj.TE.gvc();
+            vc = obj.ext.gvc();
             if nargout == 0
                 if isempty(vc)
-                    fprintf('%s is not installed\n', obj.TE.name);
+                    fprintf('%s is not installed\n', obj.ext.name);
                 else
                     fprintf('Installed version: %s\n', vc);
                 end
@@ -71,51 +108,72 @@ classdef IconsUpdater < handle
             end
         end
         
-        function [isupd, r] = isupdate(obj, cbfun, delay)
+        function isupd = isupdate(obj, cbfun, delay)
             % Check that update is available
             if obj.isonline()
-                vc = obj.TE.gvc();
+                vc = obj.ext.gvc();
                 if nargin < 2
-                    [vr, r] = obj.gvr();
+                    vr = obj.gvr();
                     isupd = ~isempty(vr) & ~isequal(vc, vr);
                 else
                     if nargin < 3
                         delay = 1;
                     end
                     isupd = false;
-                    r = '';
                     t = timer('ExecutionMode', 'singleShot', 'StartDelay', delay);
                     t.TimerFcn = @(~, ~) obj.isupd_async(cbfun, vc);
                     t.Period = 1;
                     start(t);
                 end
             else
-                r = [];
                 isupd = false;
             end
         end
         
-        function installweb(obj, r)
+        function installweb(obj, dpath)
             % Download and install latest version from remote (GitHub)
             if nargin < 2
-                [~, r] = obj.gvr();
+                dpath = tempname;
+                mkdir(dpath);
             end
-            fprintf('* Installation of %s is started *\n', obj.TE.name);
-            fprintf('Installing the latest version: v%s...\n', obj.vr);
-            dpath = tempname;
-            mkdir(dpath);
-            fpath = fullfile(dpath, r.assets.name);
-            websave(fpath, r.assets.browser_download_url);
-            res = obj.TE.install(fpath);
-            fprintf('%s v%s has been installed\n', res.Name{1}, res.Version{1});
-            delete(fpath);
+            if isempty(obj.res)
+                obj.gvr();
+            end
+            if ~isempty(obj.vr)
+                fprintf('* Installation of %s is started *\n', obj.ext.name);
+                fprintf('Installing the latest version: v%s...\n', obj.vr);
+                fpath = fullfile(dpath, obj.res.assets.name);
+                websave(fpath, obj.res.assets.browser_download_url);
+                r = obj.ext.install(fpath);
+                fprintf('%s v%s has been installed\n', r.Name{1}, r.Version{1});
+                delete(fpath);
+            end
         end
         
-        function update(obj)
+        function update(obj, delay, cbpre, varargin)
             % Update installed version to the latest from remote (GitHub)
-            [isupd, r] = obj.isupdate();
-            if isupd
-                obj.installweb(r);
+            if obj.isupdate()
+                if nargin < 2
+                    delay = 1;
+                end
+                dpath = tempname;
+                mkdir(dpath);
+                TE = feval(obj.ext.getselfname());
+                TE.root = dpath;
+                TE.name = 'Temp';
+                vname = obj.ext.getvalidname();
+                if vname == "ToolboxExtender"
+                    vname = "Toolbox";
+                end
+                TE.cloneclass('Extender', obj.ext.root, vname);
+                cname = TE.cloneclass('Updater', obj.ext.root, vname);
+                copyfile(fullfile(obj.ext.root, obj.ext.config), dpath);
+                t = timer('StartDelay', delay, 'ExecutionMode', 'singleShot',...
+                    'TimerFcn', @(t, e) obj.installweb_async(t, e, dpath, cname, varargin{:}));
+                if nargin > 2 && ~isempty(cbpre)
+                    cbpre();
+                end
+                start(t);                
             end
         end
         
@@ -128,6 +186,19 @@ classdef IconsUpdater < handle
             vr = obj.gvr();
             isupd = ~isempty(vr) & ~isequal(vc, vr);
             cbfun(isupd);
+        end
+        
+        function installweb_async(obj, t, event, dpath, cname, cbpost)
+            % Task for update timer
+            p0 = cd(dpath);
+            TU = eval(cname);
+            TU.installweb(dpath);
+            cd(p0);
+            stop(t);
+            if nargin > 5
+                cbpost();
+            end
+            delete(t);
         end
         
     end

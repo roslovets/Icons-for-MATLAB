@@ -82,12 +82,15 @@ classdef IconsExtender < handle
             if isempty(guid)
                 disp('Nothing to uninstall');
             else
-                if obj.type == "toolbox"
-                    matlab.addons.uninstall(char(guid));
-                else
-                    matlab.apputil.uninstall(char(guid));
+                guid = string(guid);
+                for i = 1 : length(guid)
+                    if obj.type == "toolbox"
+                        matlab.addons.uninstall(char(guid(i)));
+                    else
+                        matlab.apputil.uninstall(char(guid(i)));
+                    end
                 end
-                disp('Uninstalled');
+                disp(obj.name + " was uninstalled");
                 try
                     obj.gvc();
                 end
@@ -119,6 +122,21 @@ classdef IconsExtender < handle
         function web(obj)
             % Open GitHub page
             web(obj.remote, '-browser');
+        end
+        
+        function addfav(obj, code, label, icon)
+            % Add favorite
+            favs = com.mathworks.mlwidgets.favoritecommands.FavoriteCommands.getInstance();
+            nfav = com.mathworks.mlwidgets.favoritecommands.FavoriteCommandProperties();
+            nfav.setLabel(label);
+            nfav.setCategoryLabel(obj.name);
+            nfav.setCode(code);
+            if nargin > 3
+                nfav.setIconPath(obj.root);
+                nfav.setIconName(icon);
+            end
+            nfav.setIsOnQuickToolBar(true);
+            favs.addCommand(nfav);
         end
         
     end
@@ -157,10 +175,10 @@ classdef IconsExtender < handle
                     pname = names{1};
                     obj.pname = pname;
                 else
-                    warning('Project file was not found in a current folder');
+                    %warning('Project file was not found in a current folder');
                 end
             else
-                warning('Project file was not found in a current folder');
+                %warning('Project file was not found in a current folder');
             end
         end
         
@@ -275,6 +293,39 @@ classdef IconsExtender < handle
                 end
                 i = char(i);
             end
+        end
+        
+        function [nname, npath] = cloneclass(obj, classname, sourcedir, prename)
+            % Clone Toolbox Extander class to current Project folder
+            if nargin < 4
+                prename = "Toolbox";
+            end
+            if nargin < 3
+                sourcedir = pwd;
+            end
+            if nargin < 2
+                classname = "Extender";
+            else
+                classname = lower(char(classname));
+                classname(1) = upper(classname(1));
+            end
+            pname = obj.getvalidname;
+            if isempty(pname)
+                pname = 'Toolbox';
+            end
+            oname = string(prename) + classname;
+            nname = pname + string(classname);
+            npath = fullfile(obj.root, nname + ".m");
+            opath = fullfile(sourcedir, oname + ".m");
+            copyfile(opath, npath);
+            obj.txtrep(npath, "obj = " + oname, "obj = " + nname);
+            obj.txtrep(npath, "classdef " + oname, "classdef " + nname);
+            obj.txtrep(npath, "obj.ext = IconsExtender", "obj.ext = " + obj.getvalidname + "Extender");
+        end
+        
+        function name = getselfname(~)
+            % Get self class name
+            name = mfilename('class');
         end
         
     end
