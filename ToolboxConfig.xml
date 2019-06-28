@@ -3,7 +3,7 @@
    <name>Icons</name>
    <pname>Icons.prj</pname>
    <type>toolbox</type>
-   <remote>https://github.com/roslovets/Icons-for-MATLAB</remote>
+   <remote>https://github.com/roslovets/Icons-for-MATLAB.git</remote>
    <extv>1.7</extv>
 </config>
 <!--Toolbox Extender configuration file. DO NOT DELETE-->

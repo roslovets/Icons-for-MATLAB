@@ -6,11 +6,14 @@ classdef IconsUpdater < handle
     properties
         ext % Toolbox Extender
         vr % latest remote version form internet (GitHub)
+        isupd % update is available
+        relsum % release notes summary
+        rel % release notes
+        bin % Toolbox binary
     end
     
     properties (Hidden)
         res % GitHub resources
-        rel % release notes
     end
     
     methods
@@ -34,6 +37,26 @@ classdef IconsUpdater < handle
                 obj.res = res;
                 obj.vr = erase(res.tag_name, 'v');
                 obj.rel = res.body;
+                % Extract release summary
+                sum = '';
+                if contains(obj.rel, '# Summary')
+                    sum = extractAfter(obj.rel, '# Summary');
+                    if contains(sum, '#')
+                        sum = extractBefore(sum, '#');
+                    end
+                end
+                sum = char(strtrim(sum));
+                obj.relsum = sum;
+                % Extract update is available
+                obj.isupd = ~isempty(obj.vr) & ~isequal(obj.ext.vc, obj.vr);
+                % Get binary information
+                assets = struct2table(obj.res.assets, 'AsArray', 1);
+                assets = assets(endsWith(assets.name, '.mltbx'), :);
+                if ~isempty(assets)
+                    obj.bin = table2struct(assets(1, :));
+                else
+                    obj.bin = [];
+                end
             catch err
             end
         end
@@ -56,20 +79,15 @@ classdef IconsUpdater < handle
         
         function sum = getrelsum(obj)
             % Get release notes summary
-            rel = obj.getrel();
-            sum = '';
-            if contains(rel, '# Summary')
-                sum = extractAfter(rel, '# Summary');
-                if contains(sum, '#')
-                    sum = extractBefore(sum, '#');
-                end
+            if isempty(obj.res)
+                obj.fetch();
             end
-            sum = string(strtrim(sum));
+            sum = obj.relsum;
         end
         
         function webrel(obj)
             % Open GitHub releases webpage
-            web(obj.ext.remote + "/releases");
+            obj.ext.webrel();
         end
         
         function [vc, vr] = ver(obj)
@@ -114,8 +132,8 @@ classdef IconsUpdater < handle
             if obj.isonline()
                 vc = obj.ext.gvc();
                 if nargin < 2
-                    vr = obj.gvr();
-                    isupd = ~isempty(vr) & ~isequal(vc, vr);
+                    obj.fetch();
+                    isupd = obj.isupd;
                 else
                     if nargin < 3
                         delay = 1;
@@ -143,8 +161,11 @@ classdef IconsUpdater < handle
             if ~isempty(obj.vr)
                 fprintf('* Installation of %s is started *\n', obj.ext.name);
                 fprintf('Installing the latest version: v%s...\n', obj.vr);
-                fpath = fullfile(dpath, obj.res.assets.name);
-                websave(fpath, obj.res.assets.browser_download_url);
+                if isempty(obj.bin)
+                    error('No toolbox file were found on GitHub. Contact toolbox author');
+                end
+                fpath = fullfile(dpath, obj.bin.name);
+                websave(fpath, obj.bin.browser_download_url);
                 r = obj.ext.install(fpath);
                 fprintf('%s v%s has been installed\n', r.Name{1}, r.Version{1});
                 delete(fpath);
@@ -184,9 +205,8 @@ classdef IconsUpdater < handle
         
         function isupd_async(obj, cbfun, vc)
             % Task for async ver timer
-            vr = obj.gvr();
-            isupd = ~isempty(vr) & ~isequal(vc, vr);
-            cbfun(isupd);
+            obj.fetch();
+            cbfun(obj.isupd);
         end
         
         function installweb_async(obj, t, event, dpath, cname, cbpost)

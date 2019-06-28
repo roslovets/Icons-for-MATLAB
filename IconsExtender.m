@@ -124,7 +124,7 @@ classdef IconsExtender < handle
             web(obj.remote, '-browser');
         end
         
-        function addfav(obj, code, label, icon)
+        function addfav(obj, label, code, icon)
             % Add favorite
             favs = com.mathworks.mlwidgets.favoritecommands.FavoriteCommands.getInstance();
             nfav = com.mathworks.mlwidgets.favoritecommands.FavoriteCommandProperties();
@@ -321,11 +321,17 @@ classdef IconsExtender < handle
             obj.txtrep(npath, "obj = " + oname, "obj = " + nname);
             obj.txtrep(npath, "classdef " + oname, "classdef " + nname);
             obj.txtrep(npath, "obj.ext = IconsExtender", "obj.ext = " + obj.getvalidname + "Extender");
+            obj.txtrep(npath, "upd = IconsUpdater", "upd = " + obj.getvalidname + "Updater");
         end
         
         function name = getselfname(~)
             % Get self class name
             name = mfilename('class');
+        end
+        
+        function webrel(obj)
+            % Open GitHub releases webpage
+            web(obj.remote + "/releases", '-browser');
         end
         
     end

@@ -132,6 +132,27 @@ classdef IconsDev < handle
             disp('Docs have been generated');
         end
         
+        function webrel(obj)
+            % Open GitHub releases webpage
+            obj.ext.webrel();
+        end
+        
+        function check(obj)
+            % Check deployed release
+            upd = IconsUpdater(obj.ext);
+            upd.fetch();
+            disp("Latest release: v" + upd.vr);
+            if isempty(upd.rel)
+                fprintf('[X] Release notes\n');
+            end
+            if isempty(upd.relsum)
+                fprintf('[X] Release notes summary\n');
+            end
+            if isempty(upd.bin)
+                fprintf('[X] Toolbox binary\n');
+            end
+        end
+        
     end
     
     
