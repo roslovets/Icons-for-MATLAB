@@ -26,6 +26,7 @@ IconsDev.m</param.exclude.filters>
     <param.apps />
     <param.registered.apps>
       <file>${PROJECT_ROOT}\faApp.mlapp</file>
+      <file>${PROJECT_ROOT}\IconsApp.mlapp</file>
     </param.registered.apps>
     <param.docs>${PROJECT_ROOT}\info.xml</param.docs>
     <param.getting.started.guide>${PROJECT_ROOT}\doc\GettingStarted.mlx</param.getting.started.guide>
@@ -109,6 +110,7 @@ IconsDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\IconsUpdater.m</file>
       <file>${PROJECT_ROOT}\IconUtils.m</file>
       <file>${PROJECT_ROOT}\info.xml</file>
+      <file>${PROJECT_ROOT}\resources</file>
       <file>${PROJECT_ROOT}\test.m</file>
       <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
       <file>${PROJECT_ROOT}\work</file>

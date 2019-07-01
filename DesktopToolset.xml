@@ -1,2 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<toolset id="user_apps_toolset" template="false"/>
+<toolset id="user_apps_toolset" template="false">
+   <tool app_file_path="IconsApp.mlapp" handler_class="com.mathworks.deployment.desktop.toolstrip.ToolboxToolSetExtensionHandler" id="eadd37fa-5639-4914-86c0-a4a206c0dccc:IconsApp.mlapp" label="Icons App" quick_access_eligible="false" toolset_id="user_apps_toolset">
+      <callback>IconsApp</callback>
+      <icon path="./" filename="icon_24.png"/>
+      <icon path="./" filename="icon_16.png"/>
+      <parent_tool id="my_apps" toolset_id="apps_toolset"/>
+   </tool>
+</toolset>
