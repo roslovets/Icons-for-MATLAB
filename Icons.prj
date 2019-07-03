@@ -5,7 +5,11 @@
     <param.email>roslovets@exponenta.ru</param.email>
     <param.company>ETMC Exponenta</param.company>
     <param.summary>Hi-res professional icons for use in MATLAB, Simulink, presentations, web, etc.</param.summary>
-    <param.description />
+    <param.description>Icons add-on provides you with professional hi-res icons for use in MATLAB, Simulink, presentations, web, etc.
+It contains over 1800 icons including:
+- Font Awesome icon pack
+- Material Design icon pack
+- Icons from MathWorks website</param.description>
     <param.screenshot>${PROJECT_ROOT}\icons-cover.png</param.screenshot>
     <param.version>1.0</param.version>
     <param.output>${PROJECT_ROOT}\Icons.mltbx</param.output>
@@ -19,7 +23,9 @@
 work
 test.m
 dev_on.m
-IconsDev.m</param.exclude.filters>
+IconsDev.m
+install.m
+installweb.m</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples />
     <param.demosxml />
@@ -55,7 +61,6 @@ IconsDev.m</param.exclude.filters>
       <param.authnamewatermark />
       <param.email />
       <param.company />
-      <param.description />
       <param.version />
       <param.output />
       <param.products.name />
@@ -89,11 +94,8 @@ IconsDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}</file>
     </fileset.rootdir>
     <fileset.rootfiles>
-      <file>${PROJECT_ROOT}\.git</file>
-      <file>${PROJECT_ROOT}\.gitignore</file>
       <file>${PROJECT_ROOT}\data</file>
       <file>${PROJECT_ROOT}\DesktopToolset.xml</file>
-      <file>${PROJECT_ROOT}\dev_on.m</file>
       <file>${PROJECT_ROOT}\doc</file>
       <file>${PROJECT_ROOT}\icon-fa-list.png</file>
       <file>${PROJECT_ROOT}\icon-fa-save.png</file>
@@ -104,18 +106,13 @@ IconsDev.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\Icon.m</file>
       <file>${PROJECT_ROOT}\icons</file>
       <file>${PROJECT_ROOT}\icons-cover.png</file>
-      <file>${PROJECT_ROOT}\Icons.mltbx</file>
-      <file>${PROJECT_ROOT}\Icons.prj</file>
       <file>${PROJECT_ROOT}\IconsApp.mlapp</file>
-      <file>${PROJECT_ROOT}\IconsDev.m</file>
       <file>${PROJECT_ROOT}\IconsExtender.m</file>
       <file>${PROJECT_ROOT}\IconsUpdater.m</file>
       <file>${PROJECT_ROOT}\IconUtils.m</file>
       <file>${PROJECT_ROOT}\info.xml</file>
       <file>${PROJECT_ROOT}\resources</file>
-      <file>${PROJECT_ROOT}\test.m</file>
       <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
-      <file>${PROJECT_ROOT}\work</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
