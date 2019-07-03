@@ -1,5 +1,7 @@
 # Icons for MATLAB
 
+![Icon screenshot](https://github.com/roslovets/Icons-for-MATLAB/raw/master/doc/screenshot.png)
+
 Icons add-on provides you with professional hi-res icons for use in MATLAB, Simulink, presentations, web, etc.
 
 It contains over 1800 icons including:
