@@ -45,14 +45,14 @@ classdef IconsExtender < handle
                 tbx = matlab.addons.toolbox.installedToolboxes;
                 tbx = struct2table(tbx, 'AsArray', true);
                 idx = strcmp(tbx.Name, obj.name);
-                vc = tbx.Version(idx);
+                vcs = string(tbx.Version(idx));
                 guid = tbx.Guid(idx);
-                if isscalar(vc)
-                    vc = char(vc);
-                elseif isempty(vc)
-                    vc = '';
-                else
-                    vc = char(vc(end));
+                vc = '';
+                for i = 1 : length(vcs)
+                    if matlab.addons.isAddonEnabled(guid{i}, vcs(i))
+                        vc = char(vcs(i));
+                        break
+                    end
                 end
             else
                 tbx = matlab.apputil.getInstalledAppInfo;
@@ -107,9 +107,9 @@ classdef IconsExtender < handle
             end
             docpath = fullfile(obj.root, 'doc', name);
             if endsWith(name, '.html')
-                web(docpath);
+                web(char(docpath));
             else
-                open(docpath);
+                open(char(docpath));
             end
         end
         
@@ -137,6 +137,12 @@ classdef IconsExtender < handle
             end
             nfav.setIsOnQuickToolBar(true);
             favs.addCommand(nfav);
+        end
+        
+        function rmfavs(obj)
+            % Remove all favorites
+            favs = com.mathworks.mlwidgets.favoritecommands.FavoriteCommands.getInstance();
+            favs.removeCategory(obj.name)
         end
         
     end
@@ -216,7 +222,7 @@ classdef IconsExtender < handle
             if ~isempty(remote)
                 remote = remote(end);
             end
-            remote = char(remote);
+            remote = obj.cleargit(remote);
             obj.remote = remote;
         end
         
@@ -253,7 +259,7 @@ classdef IconsExtender < handle
             obj.writetxt(txt, fpath);
         end
         
-        function bpath = getbinpath(obj)
+        function [bpath, bname] = getbinpath(obj)
             % Get generated binary file path
             [~, name] = fileparts(obj.pname);
             if obj.type == "toolbox"
@@ -261,7 +267,8 @@ classdef IconsExtender < handle
             else
                 ext = ".mlappinstall";
             end
-            bpath = fullfile(obj.root, name + ext);
+            bname = name + ext;
+            bpath = fullfile(obj.root, bname);
         end
         
         function ok = readconfig(obj)
@@ -274,7 +281,7 @@ classdef IconsExtender < handle
                 obj.name = obj.getxmlitem(conf, 'name');
                 obj.pname = obj.getxmlitem(conf, 'pname');
                 obj.type = obj.getxmlitem(conf, 'type');
-                obj.remote = erase(obj.getxmlitem(conf, 'remote'), '.git');
+                obj.remote = obj.cleargit(obj.getxmlitem(conf, 'remote'));
                 obj.extv = obj.getxmlitem(conf, 'extv');
             end
         end
@@ -332,6 +339,38 @@ classdef IconsExtender < handle
         function webrel(obj)
             % Open GitHub releases webpage
             web(obj.remote + "/releases", '-browser');
+        end
+        
+        function repo = getrepo(obj)
+            % Get repo string from remote URL
+            repo = extractAfter(obj.remote, 'https://github.com/');
+        end
+        
+        function url = getlatesturl(obj)
+            % Get latest release URL
+            url = obj.getapiurl() + "/releases/latest";
+        end
+        
+        function url = getapiurl(obj)
+            % Get GitHub API URL
+            url = "https://api.github.com/repos/" + obj.getrepo();
+        end
+        
+        function url = getrawurl(obj, fname)
+            % Get GitHub raw source URL
+            url = sprintf("https://raw.githubusercontent.com/%s/master/%s", obj.getrepo(), fname);
+        end
+        
+    end
+    
+    methods (Hidden, Static)
+        
+        function remote = cleargit(remote)
+            % Delete .git
+            remote = char(remote);
+            if endsWith(remote, '.git')
+                remote = remote(1:end-4);
+            end
         end
         
     end

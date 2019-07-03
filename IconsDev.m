@@ -153,6 +153,12 @@ classdef IconsDev < handle
             end
         end
         
+        function [com, url] = webinstaller(obj)
+            % Get web installer command
+            url = obj.shorturl(obj.ext.getrawurl('installweb.m'));
+            com = sprintf("eval(webread('%s'))", url);
+        end
+        
     end
     
     
@@ -212,6 +218,13 @@ classdef IconsDev < handle
             system(tagcmd);
             system('git push --tags');
             obj.ext.echo('has been tagged');
+        end
+
+        function url = shorturl(obj, url)
+            % Shorten URL by git.io
+            host = "https://git.io/";
+            url = webwrite(host + "create", 'url', url);
+            url = host + url;
         end
         
     end

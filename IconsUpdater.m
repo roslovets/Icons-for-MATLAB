@@ -28,8 +28,7 @@ classdef IconsUpdater < handle
         
         function [res, err] = fetch(obj)
             % Fetch resources from GitHub
-            iname = string(extractAfter(obj.ext.remote, 'https://github.com/'));
-            url = "https://api.github.com/repos/" + iname + "/releases/latest";
+            url = obj.ext.getlatesturl();
             res = '';
             try
                 res = webread(url);
