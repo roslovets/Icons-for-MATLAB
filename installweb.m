@@ -8,4 +8,7 @@ disp('Installing...')
 matlab.addons.install(instRes.assets.name);
 clear instURL instRes instName
 disp('Installation complete!')
-% Add post-install commands below
+% Add your post-install commands below
+ext = IconsExtender;
+ext.doc;
+IconsApp
