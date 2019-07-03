@@ -30,7 +30,7 @@ eval(webread('https://git.io/fjKjK'))
 
 Download and install [Icons.mltbx](https://github.com/roslovets/Icons-for-MATLAB/releases/download/v1.0/Icons.mltbx)
 
-# How to use ([GettingStarted]((https://htmlpreview.github.io/?https://raw.githubusercontent.com/roslovets/Icons-for-MATLAB/master/doc/GettingStarted.html))
+# How to use ([GettingStarted](https://htmlpreview.github.io/?https://raw.githubusercontent.com/roslovets/Icons-for-MATLAB/master/doc/GettingStarted.html))
 
 Open IconsApp companion application from APPS tab or execute:
 `IconsApp`
