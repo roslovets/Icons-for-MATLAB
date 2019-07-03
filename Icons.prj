@@ -109,7 +109,6 @@ installweb.m</param.exclude.filters>
       <file>${PROJECT_ROOT}\Icon.m</file>
       <file>${PROJECT_ROOT}\icons</file>
       <file>${PROJECT_ROOT}\icons-cover.png</file>
-      <file>${PROJECT_ROOT}\Icons.mltbx</file>
       <file>${PROJECT_ROOT}\Icons.prj</file>
       <file>${PROJECT_ROOT}\IconsApp.mlapp</file>
       <file>${PROJECT_ROOT}\IconsDev.m</file>
