@@ -226,10 +226,13 @@ classdef IconsExtender < handle
             obj.remote = remote;
         end
         
-        function name = getvalidname(obj)
+        function name = getvalidname(obj, cname)
             % Get valid variable name
             name = char(obj.name);
             name = name(isstrprop(name, 'alpha'));
+            if nargin > 1
+                name = char(name + string(cname));
+            end
         end
         
         function txt = readtxt(~, fpath)
