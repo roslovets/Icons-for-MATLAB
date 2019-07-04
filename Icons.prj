@@ -11,7 +11,7 @@ It contains over 1800 icons including:
 - Material Design icon pack
 - Icons from MathWorks website</param.description>
     <param.screenshot>${PROJECT_ROOT}\icons-cover.png</param.screenshot>
-    <param.version>1.1</param.version>
+    <param.version>1.2</param.version>
     <param.output>${PROJECT_ROOT}\Icons.mltbx</param.output>
     <param.products.name />
     <param.products.id />
@@ -20,13 +20,12 @@ It contains over 1800 icons including:
     <param.guid>eadd37fa-5639-4914-86c0-a4a206c0dccc</param.guid>
     <param.exclude.filters>.git
 .gitignore
+**/*.asv
 work
-test.m
 dev_on.m
 IconsDev.m
 install.m
-installweb.m
-Icons.mltbx</param.exclude.filters>
+installweb.m</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples />
     <param.demosxml />
@@ -94,11 +93,8 @@ Icons.mltbx</param.exclude.filters>
       <file>${PROJECT_ROOT}</file>
     </fileset.rootdir>
     <fileset.rootfiles>
-      <file>${PROJECT_ROOT}\.git</file>
-      <file>${PROJECT_ROOT}\.gitignore</file>
       <file>${PROJECT_ROOT}\data</file>
       <file>${PROJECT_ROOT}\DesktopToolset.xml</file>
-      <file>${PROJECT_ROOT}\dev_on.m</file>
       <file>${PROJECT_ROOT}\doc</file>
       <file>${PROJECT_ROOT}\icon-fa-list.png</file>
       <file>${PROJECT_ROOT}\icon-fa-save.png</file>
@@ -109,20 +105,14 @@ Icons.mltbx</param.exclude.filters>
       <file>${PROJECT_ROOT}\Icon.m</file>
       <file>${PROJECT_ROOT}\icons</file>
       <file>${PROJECT_ROOT}\icons-cover.png</file>
-      <file>${PROJECT_ROOT}\Icons.mltbx</file>
-      <file>${PROJECT_ROOT}\Icons.prj</file>
       <file>${PROJECT_ROOT}\IconsApp.mlapp</file>
-      <file>${PROJECT_ROOT}\IconsDev.m</file>
       <file>${PROJECT_ROOT}\IconsExtender.m</file>
       <file>${PROJECT_ROOT}\IconsUpdater.m</file>
       <file>${PROJECT_ROOT}\IconUtils.m</file>
       <file>${PROJECT_ROOT}\info.xml</file>
-      <file>${PROJECT_ROOT}\install.m</file>
-      <file>${PROJECT_ROOT}\installweb.m</file>
       <file>${PROJECT_ROOT}\README.md</file>
       <file>${PROJECT_ROOT}\resources</file>
       <file>${PROJECT_ROOT}\ToolboxConfig.xml</file>
-      <file>${PROJECT_ROOT}\work</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />
