@@ -30,7 +30,7 @@ eval(webread('https://git.io/fjKjK'))
 
 ## 2nd approach
 
-Download and install [Icons.mltbx](https://github.com/roslovets/Icons-for-MATLAB/releases/download/v1.0/Icons.mltbx)
+Download and install [Icons.mltbx](https://roslovets.github.io/ghbin/#roslovets/Icons-for-MATLAB#Icons.mltbx)
 
 ## 3rd approach
 
