@@ -113,6 +113,11 @@ classdef Icon < IconUtils
             end
         end
         
+        function open(obj)
+            %Open Icon in system browser
+            winopen(obj.getPath());
+        end
+        
         function [obj, color] = pickColor(obj)
             %Pick color manually
             color = uisetcolor();
