@@ -15,6 +15,7 @@ classdef IconsExtender < handle
     
     properties (Hidden)
         config = 'ToolboxConfig.xml' % configuration file name
+        project % MATLAB Project handle
     end
     
     methods
@@ -41,23 +42,31 @@ classdef IconsExtender < handle
         
         function [vc, guid] = gvc(obj)
             % Get current installed version
-            if obj.type == "toolbox"
-                tbx = matlab.addons.toolbox.installedToolboxes;
-                tbx = struct2table(tbx, 'AsArray', true);
-                idx = strcmp(tbx.Name, obj.name);
-                vcs = string(tbx.Version(idx));
-                guid = tbx.Guid(idx);
-                vc = '';
-                for i = 1 : length(vcs)
-                    if matlab.addons.isAddonEnabled(guid{i}, vcs(i))
-                        vc = char(vcs(i));
-                        break
+            switch obj.type
+                case "toolbox"
+                    tbx = matlab.addons.toolbox.installedToolboxes;
+                    if ~isempty(tbx)
+                        tbx = struct2table(tbx, 'AsArray', true);
+                        idx = strcmp(tbx.Name, obj.name);
+                        vcs = string(tbx.Version(idx));
+                        guid = tbx.Guid(idx);
+                        vc = '';
+                        for i = 1 : length(vcs)
+                            if matlab.addons.isAddonEnabled(guid{i}, vcs(i))
+                                vc = char(vcs(i));
+                                break
+                            end
+                        end
+                    else
+                        vc = '';
+                        guid = '';
                     end
-                end
-            else
-                tbx = matlab.apputil.getInstalledAppInfo;
-                vc = '';
-                guid = '';
+                case "app"
+                    apps = matlab.apputil.getInstalledAppInfo;
+                    vc = '';
+                    guid = '';
+                otherwise
+                    vc = '';
             end
             obj.vc = vc;
         end
@@ -67,10 +76,13 @@ classdef IconsExtender < handle
             if nargin < 2
                 fpath = obj.getbinpath();
             end
-            if obj.type == "toolbox"
-                res = matlab.addons.install(fpath);
-            else
-                res = matlab.apputil.install(fpath);
+            switch obj.type
+                case "toolbox"
+                    res = matlab.addons.install(fpath);
+                case "app"
+                    res = matlab.apputil.install(fpath);
+                otherwise
+                    error('Unsupported for %s\n', obj.type);
             end
             obj.gvc();
             obj.echo('has been installed');
@@ -84,10 +96,13 @@ classdef IconsExtender < handle
             else
                 guid = string(guid);
                 for i = 1 : length(guid)
-                    if obj.type == "toolbox"
-                        matlab.addons.uninstall(char(guid(i)));
-                    else
-                        matlab.apputil.uninstall(char(guid(i)));
+                    switch obj.type
+                        case "toolbox"
+                            matlab.addons.uninstall(char(guid(i)));
+                        case "app"
+                            matlab.apputil.uninstall(char(guid(i)));
+                        otherwise
+                            error('Unsupported for %s\n', obj.type);
                     end
                 end
                 disp(obj.name + " was uninstalled");
@@ -99,17 +114,24 @@ classdef IconsExtender < handle
         
         function doc(obj, name)
             % Open page from documentation
-            if (nargin < 2) || isempty(name)
-                name = 'GettingStarted';
-            end
-            if ~any(endsWith(name, {'.mlx' '.html'}))
-                name = name + ".html";
-            end
-            docpath = fullfile(obj.root, 'doc', name);
-            if endsWith(name, '.html')
-                web(char(docpath));
-            else
-                open(char(docpath));
+            docdir = fullfile(obj.root, 'doc');
+            if isfolder(docdir)
+                if (nargin < 2) || isempty(name)
+                    name = 'GettingStarted';
+                end
+                if ~any(endsWith(name, {'.mlx' '.html'}))
+                    if computer == "GLNXA64" %% Linux and MATLAB Online
+                        name = name + ".mlx";
+                    else
+                        name = name + ".html";
+                    end
+                end
+                docpath = fullfile(docdir, name);
+                if endsWith(name, '.html')
+                    web(char(docpath));
+                else
+                    open(char(docpath));
+                end
             end
         end
         
@@ -132,11 +154,30 @@ classdef IconsExtender < handle
             nfav.setCategoryLabel(obj.name);
             nfav.setCode(code);
             if nargin > 3
-                nfav.setIconPath(obj.root);
-                nfav.setIconName(icon);
+                [ipath, iname, iext] = fileparts(icon);
+                nfav.setIconPath(fullfile(obj.root, ipath));
+                nfav.setIconName(iname + string(iext));
             end
             nfav.setIsOnQuickToolBar(true);
             favs.addCommand(nfav);
+        end
+        
+        function yes = isfav(obj, label)
+            % Does favorite exist
+            favs = com.mathworks.mlwidgets.favoritecommands.FavoriteCommands.getInstance();
+            yes = favs.hasCommand(label, obj.name);
+        end
+        
+        function yes = isfavs(obj)
+            % Does favorites category exist
+            favs = com.mathworks.mlwidgets.favoritecommands.FavoriteCommands.getInstance();
+            yes = favs.hasCategory(obj.name);
+        end
+        
+        function yes = rmfav(obj, label)
+            % Remove favorite
+            favs = com.mathworks.mlwidgets.favoritecommands.FavoriteCommands.getInstance();
+            yes = favs.removeCommand(label, obj.name);
         end
         
         function rmfavs(obj)
@@ -160,25 +201,29 @@ classdef IconsExtender < handle
             name = '';
             ppath = obj.getppath();
             if isfile(ppath)
-                txt = obj.readtxt(ppath);
-                name = char(extractBetween(txt, '<param.appname>', '</param.appname>'));
+                switch obj.type
+                    case "toolbox"
+                        txt = obj.readtxt(ppath);
+                        name = char(extractBetween(txt, '<param.appname>', '</param.appname>'));
+                    case "project"
+                        name = obj.project.Name;
+                end
             end
             obj.name = name;
         end
         
         function pname = getpname(obj)
             % Get project file name
-            fs = dir(fullfile(obj.root, '*.prj'));
+            fs = obj.dir(fullfile(obj.root, '*.prj'));
             if ~isempty(fs)
-                names = {fs.name};
-                isproj = false(1, length(names));
-                for i = 1 : length(names)
-                    txt = obj.readtxt(fullfile(obj.root, names{i}));
-                    isproj(i) = ~contains(txt, '<MATLABProject');
+                isproj = false(1, length(fs.name));
+                for i = 1 : length(fs.name)
+                    txt = obj.readtxt(fs.path(i));
+                    isproj(i) = ~contains(txt, '<MATLABProject111111');
                 end
                 if any(isproj)
-                    names = names(isproj);
-                    pname = names{1};
+                    names = fs.name(isproj);
+                    pname = names(1);
                     obj.pname = pname;
                 else
                     %warning('Project file was not found in a current folder');
@@ -205,8 +250,21 @@ classdef IconsExtender < handle
                 type = 'toolbox';
             elseif contains(txt, 'plugin.apptool')
                 type = 'app';
+            elseif contains(txt, '<MATLABProject')
+                type = 'project';
+                p = [];
+                try
+                    p = currentProject;
+                catch
+                    p = openProject(obj.pname);
+                end
+                if isempty(p)
+                    error('Corrupted project file: %s\n', ppath);
+                else
+                    obj.project = p;
+                end
             else
-                type = '';
+                type = 'package';
             end
             obj.type = type;
         end
@@ -229,10 +287,10 @@ classdef IconsExtender < handle
         function name = getvalidname(obj, cname)
             % Get valid variable name
             name = char(obj.name);
-            name = name(isstrprop(name, 'alpha'));
             if nargin > 1
                 name = char(name + string(cname));
             end
+            name = matlab.lang.makeValidName(name);
         end
         
         function txt = readtxt(~, fpath)
@@ -246,13 +304,14 @@ classdef IconsExtender < handle
             end
         end
         
-        function writetxt(~, txt, fpath)
+        function writetxt(~, txt, fpath, encoding)
             % Wtite text to file
-            if isfile(fpath)
-                fid = fopen(fpath, 'w', 'n', 'windows-1251');
-                fwrite(fid, unicode2native(txt, 'windows-1251'));
-                fclose(fid);
+            if nargin < 4
+                encoding = 'windows-1251';
             end
+            fid = fopen(fpath, 'w', 'n', encoding);
+            fwrite(fid, unicode2native(txt, encoding));
+            fclose(fid);
         end
         
         function txt = txtrep(obj, fpath, old, new)
@@ -265,10 +324,13 @@ classdef IconsExtender < handle
         function [bpath, bname] = getbinpath(obj)
             % Get generated binary file path
             [~, name] = fileparts(obj.pname);
-            if obj.type == "toolbox"
-                ext = ".mltbx";
-            else
-                ext = ".mlappinstall";
+            switch obj.type
+                case "toolbox"
+                    ext = ".mltbx";
+                case "app"
+                    ext = ".mlappinstall";
+                otherwise
+                    error('Unsupported for %s\n', obj.type);
             end
             bname = name + ext;
             bpath = fullfile(obj.root, bname);
@@ -367,6 +429,24 @@ classdef IconsExtender < handle
     end
     
     methods (Hidden, Static)
+        
+        function [fs, ds] = dir(dpath)
+            % Get directory content in convenient format
+            if nargin < 1
+                dpath = pwd;
+            end
+            fs = struct2table(dir(dpath), 'AsArray', true);
+            fs = convertvars(fs, 1:2, 'string');
+            fs = fs(~ismember(fs.name, ["." ".."]), :);
+            fs.date = datetime(fs.datenum, 'ConvertFrom', 'datenum');
+            fs.datenum = [];
+            fs.path = fullfile(fs.folder, fs.name);
+            fs = movevars(fs, "path", 'After', 'folder');
+            if nargout > 1
+                ds = fs(fs.isdir, :);
+                fs = fs(~fs.isdir, :);
+            end
+        end
         
         function remote = cleargit(remote)
             % Delete .git

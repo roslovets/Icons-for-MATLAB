@@ -18,7 +18,7 @@ classdef IconsUpdater < handle
     
     methods
         function obj = IconsUpdater(extender)
-            % Init
+            %% Constructor
             if nargin < 1
                 obj.ext = IconsExtender;
             else
@@ -27,7 +27,7 @@ classdef IconsUpdater < handle
         end
         
         function [res, err] = fetch(obj)
-            % Fetch resources from GitHub
+            %% Fetch resources from GitHub
             url = obj.ext.getlatesturl();
             res = '';
             try
@@ -61,7 +61,7 @@ classdef IconsUpdater < handle
         end
         
         function vr = gvr(obj)
-            % Get remote version from GitHub
+            %% Get remote version from GitHub
             if isempty(obj.vr)
                 obj.fetch();
             end
@@ -69,7 +69,7 @@ classdef IconsUpdater < handle
         end
         
         function rel = getrel(obj)
-            % Get release notes
+            %% Get release notes
             if isempty(obj.res)
                 obj.fetch();
             end
@@ -77,7 +77,7 @@ classdef IconsUpdater < handle
         end
         
         function sum = getrelsum(obj)
-            % Get release notes summary
+            %% Get release notes summary
             if isempty(obj.res)
                 obj.fetch();
             end
@@ -85,12 +85,12 @@ classdef IconsUpdater < handle
         end
         
         function webrel(obj)
-            % Open GitHub releases webpage
+            %% Open GitHub releases webpage
             obj.ext.webrel();
         end
         
         function [vc, vr] = ver(obj)
-            % Check curent installed and remote versions
+            %% Check curent installed and remote versions
             vc = obj.ext.gvc();
             if nargout == 0
                 if isempty(vc)
@@ -117,7 +117,7 @@ classdef IconsUpdater < handle
         end
         
         function yes = isonline(~)
-            % Check connection to internet is available
+            %% Check connection to internet is available
             try
                 java.net.InetAddress.getByName('google.com');
                 yes = true;
@@ -127,9 +127,8 @@ classdef IconsUpdater < handle
         end
         
         function isupd = isupdate(obj, cbfun, delay)
-            % Check that update is available
+            %% Check that update is available
             if obj.isonline()
-                vc = obj.ext.gvc();
                 if nargin < 2
                     obj.fetch();
                     isupd = obj.isupd;
@@ -138,10 +137,7 @@ classdef IconsUpdater < handle
                         delay = 1;
                     end
                     isupd = false;
-                    t = timer('ExecutionMode', 'singleShot', 'StartDelay', delay);
-                    t.TimerFcn = @(~, ~) obj.isupd_async(cbfun, vc);
-                    t.Period = 1;
-                    start(t);
+                    obj.run_task(@(~, ~) obj.isupd_async(cbfun), delay);
                 end
             else
                 isupd = false;
@@ -149,7 +145,7 @@ classdef IconsUpdater < handle
         end
         
         function installweb(obj, dpath)
-            % Download and install latest version from remote (GitHub)
+            %% Download and install the latest version from remote (GitHub)
             if nargin < 2
                 dpath = tempname;
                 mkdir(dpath);
@@ -172,7 +168,7 @@ classdef IconsUpdater < handle
         end
         
         function update(obj, delay, cbpre, varargin)
-            % Update installed version to the latest from remote (GitHub)
+            %% Update installed version to the latest from remote (GitHub)
             if obj.isupdate()
                 if nargin < 2
                     delay = 1;
@@ -189,12 +185,11 @@ classdef IconsUpdater < handle
                 TE.cloneclass('Extender', obj.ext.root, vname);
                 cname = TE.cloneclass('Updater', obj.ext.root, vname);
                 copyfile(fullfile(obj.ext.root, obj.ext.config), dpath);
-                t = timer('StartDelay', delay, 'ExecutionMode', 'singleShot',...
-                    'TimerFcn', @(t, e) obj.installweb_async(t, e, dpath, cname, varargin{:}));
                 if nargin > 2 && ~isempty(cbpre)
                     cbpre();
                 end
-                start(t);                
+                taskfcn = @(~, ~) obj.installweb_async(dpath, cname, varargin{:});
+                obj.run_task(taskfcn, delay);
             end
         end
         
@@ -202,23 +197,29 @@ classdef IconsUpdater < handle
     
     methods (Hidden)
         
-        function isupd_async(obj, cbfun, vc)
-            % Task for async ver timer
+        function isupd_async(obj, cbfun)
+            %% Task for async ver timer
             obj.fetch();
             cbfun(obj.isupd);
         end
         
-        function installweb_async(obj, t, event, dpath, cname, cbpost)
-            % Task for update timer
+        function installweb_async(~, dpath, cname, cbpost)
+            %% Task for update timer
             p0 = cd(dpath);
             TU = eval(cname);
             TU.installweb(dpath);
             cd(p0);
-            stop(t);
-            if nargin > 5
+            if nargin > 3
                 cbpost();
             end
-            delete(t);
+        end
+        
+        function run_task(obj, fcn, delay)
+            %% Run delayed asynchronous task
+            tmr = timer('ExecutionMode', 'singleShot', 'StartDelay', delay,...
+                'TimerFcn', fcn, 'StopFcn', @(tmr,~,~) delete(tmr),...
+                'Name', obj.ext.name + " task");
+            start(tmr);
         end
         
     end

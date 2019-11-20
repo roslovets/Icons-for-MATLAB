@@ -1,7 +1,7 @@
 function install
 % Generated with Toolbox Extender https://github.com/ETMC-Exponenta/ToolboxExtender
 dev = IconsDev;
-dev.test;
+dev.test('', false);
 % Post-install commands
 cd('..');
 ext = IconsExtender;
