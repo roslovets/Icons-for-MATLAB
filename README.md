@@ -1,4 +1,5 @@
 # Icons for MATLAB
+[![View Icons (for App Designer, Simulink, presentations, etc.) on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/72044-icons-for-app-designer-simulink-presentations-etc)
 
 ![Icon screenshot](https://github.com/roslovets/Icons-for-MATLAB/raw/master/doc/screenshot.png)
 
