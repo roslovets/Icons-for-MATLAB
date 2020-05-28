@@ -25,7 +25,8 @@ work
 dev_on.m
 IconsDev.m
 install.m
-installweb.m</param.exclude.filters>
+installweb.m
+test</param.exclude.filters>
     <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples />
     <param.demosxml />
@@ -95,6 +96,7 @@ installweb.m</param.exclude.filters>
     <fileset.rootfiles>
       <file>${PROJECT_ROOT}\data</file>
       <file>${PROJECT_ROOT}\DesktopToolset.xml</file>
+      <file>${PROJECT_ROOT}\dev</file>
       <file>${PROJECT_ROOT}\doc</file>
       <file>${PROJECT_ROOT}\icon-fa-list.png</file>
       <file>${PROJECT_ROOT}\icon-fa-save.png</file>
@@ -123,7 +125,7 @@ installweb.m</param.exclude.filters>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2019b</root>
+      <root>E:\Program Files\MATLAB\R2020a</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
         <toolbox name="embeddedcoder" />
