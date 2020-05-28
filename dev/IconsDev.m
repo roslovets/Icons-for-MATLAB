@@ -67,7 +67,7 @@ classdef IconsDev < handle
                 matlab.addons.toolbox.packageToolbox(ppath, bname);
             else
                 matlab.apputil.package(ppath);
-                movefile(fullfile(obj.ext.root, obj.ext.name + ".mlappinstall"), bpath + ".mlappinstall",'f');
+                %movefile(fullfile(obj.ext.root, obj.ext.name + ".mlappinstall"), bpath + ".mlappinstall",'f');
             end
             obj.ext.echo("v" + vp + " has been built");
         end
@@ -345,6 +345,13 @@ classdef IconsDev < handle
                 catch
                 end
             end
+        end
+        
+        function [v, r] = mlver()
+            v = version();
+            v = split(v, '.');
+            v = str2double(join(v(1:2), '.'));
+            r = "R" + version('-release');
         end
 
     end

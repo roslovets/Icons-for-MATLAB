@@ -4,8 +4,8 @@
       <callback>IconsApp</callback>
       <summary>Professional hi-res icons for use in MATLAB, Simulink, presentations, web, etc.</summary>
       <description>Professional hi-res icons for use in MATLAB, Simulink, presentations, web, etc.</description>
-      <icon filename="matlab_app_generic_icon_24"/>
-      <icon filename="matlab_app_generic_icon_16"/>
+      <icon path="./" filename="icon_24.png"/>
+      <icon path="./" filename="icon_16.png"/>
       <parent_tool id="my_apps" toolset_id="apps_toolset"/>
    </tool>
 </toolset>

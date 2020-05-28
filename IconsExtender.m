@@ -42,6 +42,7 @@ classdef IconsExtender < handle
         
         function [vc, guid] = gvc(obj)
             % Get current installed version
+            vc = '';
             switch obj.type
                 case "toolbox"
                     tbx = matlab.addons.toolbox.installedToolboxes;
@@ -59,14 +60,19 @@ classdef IconsExtender < handle
                         end
                     else
                         vc = '';
-                        guid = '';
                     end
                 case "app"
-                    apps = matlab.apputil.getInstalledAppInfo;
-                    vc = '';
-                    guid = '';
-                otherwise
-                    vc = '';
+                    if ~isdeployed()
+                        adds = matlab.addons.installedAddons;
+                    else
+                        adds = [];
+                    end
+                    if ~isempty(adds)
+                        app = adds(adds.Name == obj.name, :);
+                        if ~isempty(app)
+                            vc = app.Version{1};
+                        end
+                    end
             end
             obj.vc = vc;
         end
@@ -293,27 +299,6 @@ classdef IconsExtender < handle
             name = matlab.lang.makeValidName(name);
         end
         
-        function txt = readtxt(~, fpath)
-            % Read text from file
-            if isfile(fpath)
-                f = fopen(fpath, 'r', 'n', 'windows-1251');
-                txt = fread(f, '*char')';
-                fclose(f);
-            else
-                txt = '';
-            end
-        end
-        
-        function writetxt(~, txt, fpath, encoding)
-            % Wtite text to file
-            if nargin < 4
-                encoding = 'windows-1251';
-            end
-            fid = fopen(fpath, 'w', 'n', encoding);
-            fwrite(fid, unicode2native(txt, encoding));
-            fclose(fid);
-        end
-        
         function txt = txtrep(obj, fpath, old, new)
             % Replace in txt file
             txt = obj.readtxt(fpath);
@@ -454,6 +439,30 @@ classdef IconsExtender < handle
             if endsWith(remote, '.git')
                 remote = remote(1:end-4);
             end
+        end
+        
+        function txt = readtxt(fpath, encoding)
+            % Read text from file
+            if nargin < 2
+                encoding = 'utf-8';
+            end
+            if isfile(fpath)
+                f = fopen(fpath, 'r', 'n', encoding);
+                txt = fread(f, '*char')';
+                fclose(f);
+            else
+                txt = '';
+            end
+        end
+        
+        function writetxt(txt, fpath, encoding)
+            % Wtite text to file
+            if nargin < 3
+                encoding = 'utf-8';
+            end
+            fid = fopen(fpath, 'w', 'n', encoding);
+            fwrite(fid, unicode2native(txt, encoding));
+            fclose(fid);
         end
         
     end
